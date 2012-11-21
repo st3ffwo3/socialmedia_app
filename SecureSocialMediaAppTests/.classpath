@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JBoss RESTeasy"/>
+	<classpathentry kind="lib" path="/BasicLibraries/commons/codec/commons-codec-1.7.jar"/>
+	<classpathentry kind="lib" path="/BasicLibraries/commons/lang3/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="/BasicLibraries/dev-cache/BasicApi.jar" sourcepath="/BasicApi"/>
+	<classpathentry kind="lib" path="/BasicLibraries/dev-cache/SecureSocialMediaAppApi.jar"/>
+	<classpathentry kind="lib" path="/BasicLibraries/commons/configuration/commons-configuration-1.7.jar"/>
+	<classpathentry kind="lib" path="/BasicLibraries/commons/lang/commons-lang-2.6.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

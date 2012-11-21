@@ -1,0 +1,39 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE project>
+
+<project name="HM.EDU: Generate SecureSocialMediaApp (Development Build)" default="deploy" basedir=".">
+
+	<!-- set global properties for this build -->
+	<property name="config.dir" value="../SecureSocialMediaAppBuildEnv" />
+
+	<!-- load global properties (user specific) -->
+	<property file="${user.home}/.ant/global-build.properties" />
+
+	<!-- load global properties (workspace specific) -->
+	<property file="${config.dir}/global-build.properties" />
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${libraries.dir}/ant/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="deploy">
+		<ant dir="." target="complete-build" />
+		<if>
+			<equals arg1="${jboss.version}" arg2="7" />
+			<then>
+				<copy todir="${jboss7.deploy.dir}">
+					<fileset dir="${build.env.dist.dir}" includes="SecureSocialMediaApp.ear" />
+				</copy>
+			</then>
+			<else>
+				<copy todir="${jboss6.deploy.dir}">
+					<fileset dir="${build.env.dist.dir}" includes="SecureSocialMediaApp.ear" />
+				</copy>
+			</else>
+		</if>
+		<ant dir="." target="final-clean" />
+	</target>
+
+</project>

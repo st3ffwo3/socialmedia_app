@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="SecureSocialMediaApp">
+        <wb-resource deploy-path="/" source-path="/EarContent" tag="defaultRootSource"/>
+        <dependent-module archiveName="SecureSocialMediaAppDatabaseBeans.jar" deploy-path="/" handle="module:/resource/SecureSocialMediaAppDatabaseBeans/SecureSocialMediaAppDatabaseBeans">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="SecureSocialMediaAppServices.war" deploy-path="/" handle="module:/resource/SecureSocialMediaAppServices/SecureSocialMediaAppServices">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-configuration-1.7.jar" deploy-path="/" handle="module:/classpath/lib/SecureSocialMediaAppLibraries/commons/configuration/commons-configuration-1.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-logging-1.1.1.jar" deploy-path="/" handle="module:/classpath/lib/SecureSocialMediaAppLibraries/commons/logging/commons-logging-1.1.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-codec-1.7.jar" deploy-path="/" handle="module:/classpath/lib/SecureSocialMediaAppLibraries/commons/codec/commons-codec-1.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang-2.6.jar" deploy-path="/" handle="module:/classpath/lib/SecureSocialMediaAppLibraries/commons/lang/commons-lang-2.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="SecureSocialMediaAppInternal.jar" deploy-path="/" handle="module:/resource/SecureSocialMediaAppInternal/SecureSocialMediaAppInternal">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="SecureSocialMediaAppApi.jar" deploy-path="/" handle="module:/resource/SecureSocialMediaAppApi/SecureSocialMediaAppApi">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang3-3.1.jar" deploy-path="/" handle="module:/classpath/lib/SecureSocialMediaAppLibraries/commons/lang/commons-lang3-3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-codec-1.7.jar" deploy-path="/" handle="module:/classpath/lib/BasicLibraries/commons/codec/commons-codec-1.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="BasicApi.jar" deploy-path="/" handle="module:/resource/BasicApi/BasicApi">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang3-3.1.jar" deploy-path="/" handle="module:/classpath/lib/BasicLibraries/commons/lang3/commons-lang3-3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>
