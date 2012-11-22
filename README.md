@@ -11,6 +11,7 @@ Voraussetzungen:
 * JBoss Tools Plugin
 * EGit Plugin
 * JBoss Application Server 6.1
+* MySQL 5.5
 
 Build Properties:
 -----------------	
