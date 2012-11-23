@@ -20,7 +20,7 @@ import edu.hm.sisy.ssma.api.object.resource.response.UserRegistrationResponse;
  */
 @ValidateRequest
 @Local
-@Path( "/register" )
+@Path( "/user" )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
 public interface IRegistrationService
@@ -34,6 +34,6 @@ public interface IRegistrationService
 	 * @return QR-Code URL
 	 */
 	@POST
-	@Path( "" )
+	@Path( "register" )
 	UserRegistrationResponse register( @Valid RegistrationUser user );
 }

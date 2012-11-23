@@ -17,6 +17,7 @@ import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
 import edu.hm.sisy.ssma.internal.object.exception.GenericUserAuthenticationException;
 import edu.hm.sisy.ssma.internal.object.exception.UserAuthenticationFailedException;
+import edu.hm.sisy.ssma.internal.object.ressource.TokenUser;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -49,10 +50,12 @@ public class UserLoginModule extends BasicAuthenticationModule
 	 * Benutzernamens und dem Session-Token.
 	 * 
 	 * @param user
-	 *            Zu authentifizierender Benutzer
-	 * @return Session-Token
+	 *            Zu authentifizierender Login-Benutzer
+	 * @param tUser
+	 *            Zu authentifizierender Token-Benutzer
+	 * @return SSMS-Token
 	 */
-	public String authenticate( LoginUser user )
+	public String authenticate( LoginUser user, TokenUser tUser )
 	{
 		try
 		{
@@ -67,26 +70,23 @@ public class UserLoginModule extends BasicAuthenticationModule
 				// Session Token persistieren
 				eUser = m_userDAOBean.update( eUser );
 
-				// Session Token zurückgeben
-				return eUser.getSessionToken();
+				// SSMS Token zurückgeben
+				return new TokenUser( eUser.getUsername(), eUser.getSessionToken() ).getSsmsToken();
 			}
-			else if (authenticateSession( user ))
+			else if (authenticateSession( tUser ))
 			{
 				// Benutzer in der Datenbank suchen
-				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+				EntityUser eUser = m_userDAOBean.read( tUser.getUsername() );
 				// Authentifizierung mit Benutzernamen/SessionToken war erfolgreich
 				// => LastUpdated aktualisieren
 				eUser.setSessionTokenLastUpdated( new Date() );
 				// Session Token persistieren
 				eUser = m_userDAOBean.update( eUser );
 
-				// Session Token zurückgeben
-				return eUser.getSessionToken();
+				// SSMS Token zurückgeben
+				return tUser.getSsmsToken();
 			}
 
-			// Session des Benutzer invalidieren (falls vorhanden)
-			UserLogoutModule logoutModule = new UserLogoutModule( m_userDAOBean );
-			logoutModule.invalidate( user );
 			// Exception werfen, da Authentifizierung fehlgeschlagen ist
 			throw new UserAuthenticationFailedException();
 		}
@@ -103,28 +103,26 @@ public class UserLoginModule extends BasicAuthenticationModule
 	/**
 	 * Authentifiziert einen Benutzer anhand seines Benutzernamens und dem Session-Token.
 	 * 
-	 * @param user
+	 * @param tUser
 	 *            Zu authentifizierender Benutzer
 	 * @return Authentifizierungs-Flag
 	 */
-	private boolean authenticateSession( LoginUser user )
+	private boolean authenticateSession( TokenUser tUser )
 	{
 		boolean userExist = true;
 
 		// Validierung der Eingabeparameter
-		if (user == null || StringUtils.isBlank( user.getUsername() ) || StringUtils.isBlank( user.getSessionToken() ))
+		if (tUser == null || StringUtils.isBlank( tUser.getUsername() ) || StringUtils.isBlank( tUser.getSessionToken() ))
 		{
 			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
 			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
 			userExist = false;
 
-			user = new LoginUser();
-			user.setUsername( "" );
-			user.setSessionToken( "" );
+			tUser = new TokenUser( "", "" );
 		}
 
 		// Benutzer in der Datenbank suchen
-		EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+		EntityUser eUser = m_userDAOBean.read( tUser.getUsername() );
 
 		if (eUser == null || StringUtils.isBlank( eUser.getSessionToken() ) || eUser.getSessionTokenLastUpdated() == null)
 		{
@@ -140,7 +138,7 @@ public class UserLoginModule extends BasicAuthenticationModule
 		// Auth-Flag-Indikator mit userExist Flag initialisieren
 		boolean authSuccessful = userExist;
 		// Session-Token auf Gleichheit prüfen
-		authSuccessful = authSuccessful && StringUtils.equals( user.getSessionToken(), eUser.getSessionToken() );
+		authSuccessful = authSuccessful && StringUtils.equals( tUser.getSessionToken(), eUser.getSessionToken() );
 		// Ablaufdatum des Session-Token prüfen
 		authSuccessful = authSuccessful && checkSessionValidity( eUser.getSessionTokenLastUpdated().getTime() );
 

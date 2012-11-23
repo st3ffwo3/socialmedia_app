@@ -62,11 +62,12 @@ public final class ErrorConstants
 	/**
 	 * Fehlermeldung für allgemeine Fehler bei der Benutzeranmeldung.
 	 */
-	public static final String GENERIC_USER_AUTHENTICATION_FAILURE_ERROR_MSG = "Bei der Anmeldung ist ein Fehler aufgetreten. "
+	public static final String GENERIC_USER_AUTHENTICATION_FAILURE_ERROR_MSG = "Bei der Authentifizierung ist ein Fehler aufgetreten. "
 			+ "Versuchen Sie es später wieder.";
 
 	/**
 	 * Fehlermeldung für eine fehlgeschlagene Authentifizierung.
 	 */
-	public static final String USER_AUTHENTICATION_FAILED_ERROR_MSG = "Die Andmeldung ist fehlgeschlagen: Ihre Anmeldedaten sind nicht korrekt.";
+	public static final String USER_AUTHENTICATION_FAILED_ERROR_MSG = "Die Authentifizierung ist fehlgeschlagen: "
+			+ "Ihre Authentifizierungsdaten sind nicht korrekt.";
 }

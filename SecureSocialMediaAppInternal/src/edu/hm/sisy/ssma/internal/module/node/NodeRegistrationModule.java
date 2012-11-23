@@ -4,7 +4,7 @@ import edu.hm.sisy.ssma.internal.bean.database.INodeDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityNode;
 
 /**
- * Registrierungsmodul für die Knoten-Registrierung.
+ * Registrierungsmodul für die Node-Registrierung.
  * 
  * @author Stefan Wörner
  */
@@ -25,10 +25,10 @@ public class NodeRegistrationModule
 	}
 
 	/**
-	 * Registriert einen Knoten im Systemverbund.
+	 * Registriert einen Node im Cluster/System.
 	 * 
 	 * @param nodeAddress
-	 *            Zu registrierender Knoten
+	 *            Zu registrierender Node
 	 */
 	public void register( String nodeAddress )
 	{
@@ -36,7 +36,7 @@ public class NodeRegistrationModule
 		EntityNode node = new EntityNode();
 		node.setAddress( nodeAddress );
 
-		// Knoten in der Datenbank speichern
+		// Node in der Datenbank speichern
 		m_nodeDAOBean.createOrUpdate( node );
 	}
 }

@@ -22,7 +22,7 @@ import edu.hm.sisy.ssma.internal.object.AbstractEntityObject;
 import edu.hm.sisy.ssma.internal.object.query.NodeQueryConstants;
 
 /**
- * Entität für die Knoten. Es werden Informationen zu den im System verfügbaren Knoten gespeichert.
+ * Entität für die Nodes im System/Cluster. Es werden Informationen zu den im System verfügbaren Nodes gespeichert.
  * 
  * @author Stefan Wörner
  */

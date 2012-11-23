@@ -2,9 +2,9 @@ package edu.hm.sisy.ssma.internal.module.auth;
 
 import org.apache.commons.lang3.StringUtils;
 
-import edu.hm.sisy.ssma.api.object.resource.BasicUser;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
+import edu.hm.sisy.ssma.internal.object.ressource.TokenUser;
 
 /**
  * Logoutmodul für die Benutzer-Abmeldung beim Logout.
@@ -28,20 +28,20 @@ public class UserLogoutModule extends BasicAuthenticationModule
 	/**
 	 * Invalidiert die Session eines Benutzers.
 	 * 
-	 * @param user
-	 *            Zu invalidierender Benutzer
+	 * @param tUser
+	 *            Zu invalidierender Token-Benutzer
 	 */
-	public void invalidate( BasicUser user )
+	public void invalidate( TokenUser tUser )
 	{
 		// Validierung der Eingabeparameter
-		if (user == null || StringUtils.isBlank( user.getUsername() ))
+		if (tUser == null || StringUtils.isBlank( tUser.getUsername() ))
 		{
 			// Keine Abmeldung möglich
 			return;
 		}
 
 		// Benutzer in der Datenbank suchen
-		EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+		EntityUser eUser = m_userDAOBean.read( tUser.getUsername() );
 
 		if (eUser == null)
 		{

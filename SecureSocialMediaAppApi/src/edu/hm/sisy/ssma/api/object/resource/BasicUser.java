@@ -21,7 +21,7 @@ import edu.hm.sisy.ssma.api.object.ErrorConstants;
  * 
  * @author Stefan Wörner
  */
-@JsonPropertyOrder( value = { "username" }, alphabetic = true )
+@JsonPropertyOrder( value = { "username", "password" }, alphabetic = true )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
 public class BasicUser extends AbstractRessourceObject
@@ -32,6 +32,9 @@ public class BasicUser extends AbstractRessourceObject
 	@NotEmpty( message = ErrorConstants.USER_NAME_EMPTY_ERROR_MSG )
 	@Email( message = ErrorConstants.USER_NAME_ILLEGAL_EMAIL_ERROR_MSG )
 	private String m_username;
+
+	@NotEmpty( message = ErrorConstants.USER_PASSWORD_EMPTY_ERROR_MSG )
+	private String m_password;
 
 	/**
 	 * Liefert das Attribut username.
@@ -57,6 +60,29 @@ public class BasicUser extends AbstractRessourceObject
 	}
 
 	/**
+	 * Liefert das Attribut password.
+	 * 
+	 * @return password
+	 */
+	@JsonProperty( "password" )
+	public String getPassword()
+	{
+		return m_password;
+	}
+
+	/**
+	 * Setzt das Attribut password.
+	 * 
+	 * @param password
+	 *            zu setzender Wert für das Attribut password
+	 */
+	@JsonProperty( "password" )
+	public void setPassword( String password )
+	{
+		m_password = password;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see edu.hm.basic.object.AbstractBasicObject#getExclusionList()
@@ -64,7 +90,7 @@ public class BasicUser extends AbstractRessourceObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] {};
+		return new String[] { "m_password" };
 	}
 
 	/**
