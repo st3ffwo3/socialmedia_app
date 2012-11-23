@@ -1,4 +1,4 @@
-package edu.hm.sisy.ssma.api.object.resource;
+package edu.hm.sisy.ssma.api.object.resource.error;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -12,77 +12,46 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import edu.hm.sisy.ssma.api.object.AbstractRessourceObject;
-import edu.hm.sisy.ssma.api.object.ErrorConstants;
 
 /**
- * Basis-Resource für den Benutzer.
+ * Basis-Resource für einen Fehler.
  * 
  * @author Stefan Wörner
  */
-@JsonPropertyOrder( value = { "username", "password" }, alphabetic = true )
+@JsonPropertyOrder( value = { "message" }, alphabetic = true )
 @JsonSerialize( include = Inclusion.NON_NULL )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class BaseUser extends AbstractRessourceObject
+public class Error extends AbstractRessourceObject
 {
 
-	private static final long serialVersionUID = -4266512340620426912L;
+	private static final long serialVersionUID = 5156935077278227366L;
 
-	@NotEmpty( message = ErrorConstants.USER_NAME_EMPTY_ERROR_MSG )
-	@Email( message = ErrorConstants.USER_NAME_ILLEGAL_EMAIL_ERROR_MSG )
-	private String m_username;
-
-	@NotEmpty( message = ErrorConstants.USER_PASSWORD_EMPTY_ERROR_MSG )
-	private String m_password;
+	private String m_message;
 
 	/**
-	 * Liefert das Attribut username.
+	 * Liefert das Attribut message.
 	 * 
-	 * @return username
+	 * @return message
 	 */
-	@JsonProperty( "username" )
-	public String getUsername()
+	@JsonProperty( "message" )
+	public String getMessage()
 	{
-		return m_username;
+		return m_message;
 	}
 
 	/**
-	 * Setzt das Attribut username.
+	 * Setzt das Attribut message.
 	 * 
-	 * @param username
-	 *            zu setzender Wert für das Attribut username
+	 * @param message
+	 *            zu setzender Wert für das Attribut message
 	 */
-	@JsonProperty( "username" )
-	public void setUsername( String username )
+	@JsonProperty( "message" )
+	public void setMessage( String message )
 	{
-		m_username = username;
-	}
-
-	/**
-	 * Liefert das Attribut password.
-	 * 
-	 * @return password
-	 */
-	@JsonProperty( "password" )
-	public String getPassword()
-	{
-		return m_password;
-	}
-
-	/**
-	 * Setzt das Attribut password.
-	 * 
-	 * @param password
-	 *            zu setzender Wert für das Attribut password
-	 */
-	@JsonProperty( "password" )
-	public void setPassword( String password )
-	{
-		m_password = password;
+		m_message = message;
 	}
 
 	/**
@@ -93,7 +62,7 @@ public class BaseUser extends AbstractRessourceObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_password" };
+		return null;
 	}
 
 	/**
@@ -105,7 +74,7 @@ public class BaseUser extends AbstractRessourceObject
 	public int hashCode()
 	{
 		return HashCodeBuilder.reflectionHashCode( INITIAL_NON_ZERO_ODD_NUMBER, MULTIPLIER_NON_ZERO_ODD_NUMBER, this, true,
-				BaseUser.class, getExclusionList() );
+				Error.class, getExclusionList() );
 	}
 
 	/**
@@ -116,7 +85,7 @@ public class BaseUser extends AbstractRessourceObject
 	@Override
 	public boolean equals( Object obj )
 	{
-		return EqualsBuilder.reflectionEquals( this, obj, true, BaseUser.class, getExclusionList() );
+		return EqualsBuilder.reflectionEquals( this, obj, true, Error.class, getExclusionList() );
 	}
 
 	/**
@@ -130,7 +99,7 @@ public class BaseUser extends AbstractRessourceObject
 		ReflectionToStringBuilder rsb = new ReflectionToStringBuilder( this, ToStringStyle.SHORT_PREFIX_STYLE );
 		rsb.setAppendStatics( false );
 		rsb.setAppendTransients( true );
-		rsb.setUpToClass( BaseUser.class );
+		rsb.setUpToClass( Error.class );
 		rsb.setExcludeFieldNames( getExclusionList() );
 		return rsb.toString();
 	}

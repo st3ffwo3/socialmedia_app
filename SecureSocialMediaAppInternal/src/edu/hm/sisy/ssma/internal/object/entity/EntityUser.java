@@ -16,6 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import edu.hm.sisy.ssma.api.object.ErrorConstants;
 import edu.hm.sisy.ssma.internal.object.AbstractEntityObject;
 
 /**
@@ -31,20 +32,14 @@ public class EntityUser extends AbstractEntityObject
 
 	private static final long serialVersionUID = -4931591312319154051L;
 
-	private static final String USERNAME_EMPTY_ERROR_MSG = "Bitte geben sie einen Benutzernamen an.";
-
-	private static final String USERNAME_VALIDATION_ERROR_MSG = "Bitte geben sie eine gültige E-Mail Adresse als Benutzername an.";
-
-	private static final String PASSWORD_EMPTY_ERROR_MSG = "Bitte geben sie ein Passwort an.";
-
 	@Id
 	@Column( name = "username", length = 255, nullable = false, unique = true )
-	@NotEmpty( message = USERNAME_EMPTY_ERROR_MSG )
-	@Email( message = USERNAME_VALIDATION_ERROR_MSG )
+	@NotEmpty( message = ErrorConstants.USER_NAME_EMPTY_ERROR_MSG )
+	@Email( message = ErrorConstants.USER_NAME_ILLEGAL_EMAIL_ERROR_MSG )
 	private String m_username;
 
 	@Column( name = "pwd", length = 255, nullable = false )
-	@NotEmpty( message = PASSWORD_EMPTY_ERROR_MSG )
+	@NotEmpty( message = ErrorConstants.USER_PASSWORD_EMPTY_ERROR_MSG )
 	private String m_digest;
 
 	@Column( name = "salt", length = 255, nullable = false )
@@ -57,7 +52,7 @@ public class EntityUser extends AbstractEntityObject
 	private String m_ssmaToken;
 
 	@Temporal( TemporalType.TIMESTAMP )
-	@Column( name = "tokenLastUpdated", nullable = true )
+	@Column( name = "token_last_updated", nullable = true )
 	private Date m_ssmaTokenLastUpdated;
 
 	/**

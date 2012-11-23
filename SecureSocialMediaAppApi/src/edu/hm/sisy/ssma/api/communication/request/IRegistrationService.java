@@ -1,11 +1,14 @@
 package edu.hm.sisy.ssma.api.communication.request;
 
 import javax.ejb.Local;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.jboss.resteasy.spi.validation.ValidateRequest;
 
 import edu.hm.sisy.ssma.api.object.resource.RegistrationUser;
 
@@ -14,6 +17,7 @@ import edu.hm.sisy.ssma.api.object.resource.RegistrationUser;
  * 
  * @author Stefan Wörner
  */
+@ValidateRequest
 @Local
 @Path( "/register" )
 @Produces( { MediaType.APPLICATION_JSON } )
@@ -30,5 +34,5 @@ public interface IRegistrationService
 	 */
 	@POST
 	@Path( "" )
-	String register( RegistrationUser user );
+	String register( @Valid RegistrationUser user );
 }
