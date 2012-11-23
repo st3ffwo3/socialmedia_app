@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -17,6 +19,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import edu.hm.sisy.ssma.api.object.ErrorConstants;
 import edu.hm.sisy.ssma.internal.object.AbstractEntityObject;
+import edu.hm.sisy.ssma.internal.object.query.NodeQueryConstants;
 
 /**
  * Entität für die Knoten. Es werden Informationen zu den im System verfügbaren Knoten gespeichert.
@@ -25,6 +28,7 @@ import edu.hm.sisy.ssma.internal.object.AbstractEntityObject;
  */
 @Entity
 @Table( name = "ssma_node" )
+@NamedQueries( { @NamedQuery( name = NodeQueryConstants.GET_ALL, query = NodeQueryConstants.GET_ALL_QUERY ) } )
 public class EntityNode extends AbstractEntityObject
 {
 

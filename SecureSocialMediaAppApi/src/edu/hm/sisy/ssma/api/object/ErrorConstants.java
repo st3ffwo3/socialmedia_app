@@ -27,9 +27,21 @@ public final class ErrorConstants
 	public static final String USER_NAME_ILLEGAL_EMAIL_ERROR_MSG = "Bitte geben Sie eine gültige E-Mail Adresse als Benutzername an.";
 
 	/**
+	 * Fehlermeldung für einen ungültigen Benutzernamen.
+	 */
+	public static final String USER_NAME_EXISTS_ERROR_MSG = "Der angegeben Benutzername ist bereits vergeben oder gesperrt.";
+
+	/**
 	 * Fehlermeldung für ein leeres Passwort.
 	 */
 	public static final String USER_PASSWORD_EMPTY_ERROR_MSG = "Bitte geben Sie Ihr Passwort an.";
+
+	/**
+	 * Fehlermeldung für ein unsicheres Passwort.
+	 */
+	public static final String USER_PASSWORD_UNSAFE_ERROR_MSG = "Bitte verwenden Sie ein sicheres Passwort. "
+			+ "Sichere Passwörter bestehen aus mindestens einer Zahl, einem Großbuchstaben, einem Kleinbuchstaben, "
+			+ "einem Sonderzeichen und sind mindestens 8 Zeichen lang.";
 
 	/**
 	 * Fehlermeldung für einen leeren TOTP Token.
@@ -40,4 +52,10 @@ public final class ErrorConstants
 	 * Fehlermeldung für eine leere Node Adresse.
 	 */
 	public static final String NODE_ADDRESS_EMPTY_ERROR_MSG = "Die Adresse des Nodes wurde nicht übertragen.";
+
+	/**
+	 * Fehlermeldung für allgemeine Fehler bei der Benutzerregistrierung.
+	 */
+	public static final String USER_REGISTRATION_FAILED = "Bei der Benutzerregistrierung ist ein Fehler aufgetreten. "
+			+ "Versuchen Sie es später wieder.";
 }

@@ -52,7 +52,6 @@ public class LoggingInterceptor
 			long endMethod = new Date().getTime();
 
 			duration = endMethod - startMethod;
-
 		}
 		catch (Exception e)
 		{

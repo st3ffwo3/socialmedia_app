@@ -7,6 +7,7 @@ import javax.persistence.PersistenceContext;
 import edu.hm.sisy.ssma.internal.bean.AbstractBean;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
+import edu.hm.sisy.ssma.internal.object.exception.UsernameAlreadyExistsException;
 
 /**
  * Bean für den Datenbankzugriff auf die User Entität.
@@ -18,7 +19,7 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 {
 
 	@PersistenceContext( unitName = "SsmAppManager" )
-	private EntityManager em;
+	private EntityManager m_em;
 
 	/**
 	 * {@inheritDoc}
@@ -28,8 +29,13 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	@Override
 	public EntityUser create( EntityUser user )
 	{
-		em.persist( user );
-		em.flush();
+		if (read( user.getUsername() ) != null)
+		{
+			throw new UsernameAlreadyExistsException();
+		}
+
+		m_em.persist( user );
+		m_em.flush();
 		return user;
 	}
 
@@ -41,7 +47,7 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	@Override
 	public EntityUser read( String userName )
 	{
-		return em.find( EntityUser.class, userName );
+		return m_em.find( EntityUser.class, userName );
 	}
 
 	/**
@@ -52,9 +58,8 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	@Override
 	public EntityUser update( EntityUser user )
 	{
-		// TODO Logik
-		user = em.merge( user );
-		em.flush();
+		user = m_em.merge( user );
+		m_em.flush();
 		return user;
 	}
 
@@ -66,7 +71,7 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	@Override
 	public void delete( EntityUser user )
 	{
-		em.remove( user );
-		em.flush();
+		m_em.remove( user );
+		m_em.flush();
 	}
 }
