@@ -6,7 +6,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
-import edu.hm.sisy.ssma.api.object.resource.error.BaseError;
+import edu.hm.sisy.ssma.api.object.resource.error.BasicError;
 
 /**
  * Provider mappt eine RuntimeException in einen entsprechenden HTTP Fehlercode inkl. Fehlermeldung im Content.
@@ -43,7 +43,7 @@ public class GenericRuntimeExceptionMapper implements ExceptionMapper<RuntimeExc
 			}
 		}
 
-		BaseError error = new BaseError();
+		BasicError error = new BasicError();
 		error.getMessages().add( ex.getMessage() );
 
 		// HTTP Fehlercode 500 := Internal Server Error

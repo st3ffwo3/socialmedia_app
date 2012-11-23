@@ -17,7 +17,7 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 @JsonPropertyOrder( value = { "username", "password", "totp-token", "session-token" }, alphabetic = true )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class AuthenticationUser extends BaseUser
+public class LoginUser extends BasicAuthenticationUser
 {
 
 	private static final long serialVersionUID = 9119069304967065381L;

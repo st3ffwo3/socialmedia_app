@@ -19,7 +19,7 @@ import edu.hm.sisy.ssma.internal.util.CodecUtility;
  * 
  * @author Stefan Wörner
  */
-public class UserRegistrationModule extends BaseAuthenticationModule
+public class UserRegistrationModule extends BasicAuthenticationModule
 {
 
 	private static final String STRONG_PASSWORD_PATTERN = ""

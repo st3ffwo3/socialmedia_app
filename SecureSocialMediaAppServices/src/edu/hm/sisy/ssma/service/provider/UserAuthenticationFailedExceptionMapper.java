@@ -4,7 +4,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import edu.hm.sisy.ssma.api.object.resource.error.BaseError;
+import edu.hm.sisy.ssma.api.object.resource.error.BasicError;
 import edu.hm.sisy.ssma.internal.object.exception.UserAuthenticationFailedException;
 
 /**
@@ -24,7 +24,7 @@ public class UserAuthenticationFailedExceptionMapper implements ExceptionMapper<
 	 */
 	public Response toResponse( UserAuthenticationFailedException uafex )
 	{
-		BaseError error = new BaseError();
+		BasicError error = new BasicError();
 		error.getMessages().add( uafex.getMessage() );
 
 		// HTTP Fehlercode 400 := Bad Request

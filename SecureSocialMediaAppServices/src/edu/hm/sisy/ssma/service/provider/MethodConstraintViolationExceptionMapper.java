@@ -7,7 +7,7 @@ import javax.ws.rs.ext.Provider;
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 
-import edu.hm.sisy.ssma.api.object.resource.error.BaseError;
+import edu.hm.sisy.ssma.api.object.resource.error.BasicError;
 
 /**
  * Provider mappt eine MethodConstraintViolationException in einen entsprechenden HTTP Fehlercode inkl. Fehlermeldung im
@@ -26,7 +26,7 @@ public class MethodConstraintViolationExceptionMapper implements ExceptionMapper
 	 */
 	public Response toResponse( MethodConstraintViolationException cex )
 	{
-		BaseError error = new BaseError();
+		BasicError error = new BasicError();
 
 		for (MethodConstraintViolation<?> violation : cex.getConstraintViolations())
 		{

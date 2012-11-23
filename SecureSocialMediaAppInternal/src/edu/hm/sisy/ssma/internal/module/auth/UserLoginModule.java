@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.sisy.ssma.api.object.ApiConstants;
-import edu.hm.sisy.ssma.api.object.resource.AuthenticationUser;
+import edu.hm.sisy.ssma.api.object.resource.LoginUser;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
 import edu.hm.sisy.ssma.internal.object.exception.GenericUserAuthenticationException;
@@ -24,7 +24,7 @@ import edu.hm.sisy.ssma.internal.util.CodecUtility;
  * 
  * @author Stefan Wörner
  */
-public class UserLoginModule extends BaseAuthenticationModule
+public class UserLoginModule extends BasicAuthenticationModule
 {
 
 	private static final int SESSION_TOKEN_SIZE = 20;
@@ -50,37 +50,33 @@ public class UserLoginModule extends BaseAuthenticationModule
 	 * 
 	 * @param user
 	 *            Zu authentifizierender Benutzer
-	 * @return Authentifizierungs-Flag
+	 * @return Session-Token
 	 */
-	public String authenticate( AuthenticationUser user )
+	public String authenticate( LoginUser user )
 	{
 		try
 		{
-			if (authenticateSession( user ))
+			if (authenticateUser( user ))
 			{
 				// Benutzer in der Datenbank suchen
 				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
-
-				// Authentifizierung mit Benutzernamen/SessionToken war erfolgreich
-				// => LastUpdated aktualisieren
-				eUser.setSessionTokenLastUpdated( new Date() );
-
-				// Session Token persistieren
-				eUser = m_userDAOBean.update( eUser );
-
-				// Session Token zurückgeben
-				return eUser.getSessionToken();
-			}
-			else if (authenticateUser( user ))
-			{
-				// Benutzer in der Datenbank suchen
-				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
-
 				// Authentifizierung mit Benutzernamen/Passwort/TOTP-Token war erfolgreich
 				// => Session Token generiern
 				eUser.setSessionToken( genSessionToken() );
 				eUser.setSessionTokenLastUpdated( new Date() );
+				// Session Token persistieren
+				eUser = m_userDAOBean.update( eUser );
 
+				// Session Token zurückgeben
+				return eUser.getSessionToken();
+			}
+			else if (authenticateSession( user ))
+			{
+				// Benutzer in der Datenbank suchen
+				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+				// Authentifizierung mit Benutzernamen/SessionToken war erfolgreich
+				// => LastUpdated aktualisieren
+				eUser.setSessionTokenLastUpdated( new Date() );
 				// Session Token persistieren
 				eUser = m_userDAOBean.update( eUser );
 
@@ -88,6 +84,10 @@ public class UserLoginModule extends BaseAuthenticationModule
 				return eUser.getSessionToken();
 			}
 
+			// Session des Benutzer invalidieren (falls vorhanden)
+			UserLogoutModule logoutModule = new UserLogoutModule( m_userDAOBean );
+			logoutModule.invalidate( user );
+			// Exception werfen, da Authentifizierung fehlgeschlagen ist
 			throw new UserAuthenticationFailedException();
 		}
 		catch (RuntimeException rex)
@@ -100,18 +100,25 @@ public class UserLoginModule extends BaseAuthenticationModule
 		}
 	}
 
-	private boolean authenticateSession( AuthenticationUser user )
+	/**
+	 * Authentifiziert einen Benutzer anhand seines Benutzernamens und dem Session-Token.
+	 * 
+	 * @param user
+	 *            Zu authentifizierender Benutzer
+	 * @return Authentifizierungs-Flag
+	 */
+	private boolean authenticateSession( LoginUser user )
 	{
 		boolean userExist = true;
 
 		// Validierung der Eingabeparameter
-		if (user == null || StringUtils.isBlank( user.getSessionToken() ))
+		if (user == null || StringUtils.isBlank( user.getUsername() ) || StringUtils.isBlank( user.getSessionToken() ))
 		{
 			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
 			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
 			userExist = false;
 
-			user = new AuthenticationUser();
+			user = new LoginUser();
 			user.setUsername( "" );
 			user.setSessionToken( "" );
 		}
@@ -119,8 +126,7 @@ public class UserLoginModule extends BaseAuthenticationModule
 		// Benutzer in der Datenbank suchen
 		EntityUser eUser = m_userDAOBean.read( user.getUsername() );
 
-		if (eUser == null || StringUtils.isBlank( eUser.getDigest() ) || StringUtils.isBlank( eUser.getSalt() )
-				|| StringUtils.isBlank( eUser.getTotpSecret() ))
+		if (eUser == null || StringUtils.isBlank( eUser.getSessionToken() ) || eUser.getSessionTokenLastUpdated() == null)
 		{
 			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
 			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
@@ -142,7 +148,14 @@ public class UserLoginModule extends BaseAuthenticationModule
 		return authSuccessful;
 	}
 
-	private boolean authenticateUser( AuthenticationUser user )
+	/**
+	 * Authentifiziert einen Benutzer anhand seines Benutzernamens, Passworts und dem TOTP-Token.
+	 * 
+	 * @param user
+	 *            Zu authentifizierender Benutzer
+	 * @return Authentifizierungs-Flag
+	 */
+	private boolean authenticateUser( LoginUser user )
 	{
 		try
 		{
@@ -156,7 +169,7 @@ public class UserLoginModule extends BaseAuthenticationModule
 				// benötigten Zeit bei korrekten Authentifizierungsparametern sein
 				userExist = false;
 
-				user = new AuthenticationUser();
+				user = new LoginUser();
 				user.setUsername( "" );
 				user.setPassword( "" );
 				user.setTotpToken( new Long( 0 ) );

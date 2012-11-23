@@ -14,7 +14,7 @@ import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
  * 
  * @author Stefan Wörner
  */
-public class BaseAuthenticationModule
+public class BasicAuthenticationModule
 {
 
 	/**
@@ -28,7 +28,7 @@ public class BaseAuthenticationModule
 	 * @param userDAOBean
 	 *            Referenz auf User DAO Bean
 	 */
-	protected BaseAuthenticationModule( IUserDAOLocal userDAOBean )
+	protected BasicAuthenticationModule( IUserDAOLocal userDAOBean )
 	{
 		m_userDAOBean = userDAOBean;
 	}

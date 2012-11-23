@@ -1,13 +1,18 @@
 package edu.hm.sisy.ssma.api.communication.request;
 
 import javax.ejb.Local;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import edu.hm.sisy.ssma.api.object.resource.AuthenticationUser;
+import org.jboss.resteasy.spi.validation.DoNotValidateRequest;
+import org.jboss.resteasy.spi.validation.ValidateRequest;
+
+import edu.hm.sisy.ssma.api.object.resource.BasicUser;
+import edu.hm.sisy.ssma.api.object.resource.LoginUser;
 import edu.hm.sisy.ssma.api.object.resource.response.UserAuthenticationResponse;
 
 /**
@@ -15,6 +20,7 @@ import edu.hm.sisy.ssma.api.object.resource.response.UserAuthenticationResponse;
  * 
  * @author Stefan Wörner
  */
+@ValidateRequest
 @Local
 @Path( "/auth" )
 @Produces( { MediaType.APPLICATION_JSON } )
@@ -23,13 +29,24 @@ public interface IAuthenticationService
 {
 
 	/**
-	 * Erzeugt ein neues Benutzer-Objekt.
+	 * Authentifiziert und melden einen Benutzer im System an.
 	 * 
 	 * @param user
-	 *            Benutzer
-	 * @return QR-Code URL
+	 *            Login Benutzer
+	 * @return Session-Token
+	 */
+	@DoNotValidateRequest
+	@POST
+	@Path( "login" )
+	UserAuthenticationResponse login( LoginUser user );
+
+	/**
+	 * Meldet einen Benutzer vom System ab.
+	 * 
+	 * @param user
+	 *            Basic Benutzer
 	 */
 	@POST
-	@Path( "" )
-	UserAuthenticationResponse authenticate( AuthenticationUser user );
+	@Path( "logout" )
+	void logout( @Valid BasicUser user );
 }

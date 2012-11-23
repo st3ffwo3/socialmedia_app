@@ -5,12 +5,14 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
 import edu.hm.sisy.ssma.api.communication.request.IAuthenticationService;
-import edu.hm.sisy.ssma.api.object.resource.AuthenticationUser;
+import edu.hm.sisy.ssma.api.object.resource.BasicUser;
+import edu.hm.sisy.ssma.api.object.resource.LoginUser;
 import edu.hm.sisy.ssma.api.object.resource.response.UserAuthenticationResponse;
 import edu.hm.sisy.ssma.internal.bean.AbstractBean;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.interceptor.LoggingInterceptor;
 import edu.hm.sisy.ssma.internal.module.auth.UserLoginModule;
+import edu.hm.sisy.ssma.internal.module.auth.UserLogoutModule;
 
 /**
  * REST-Service für die Benutzerauthentifizierung. Verfügbare Aktionen: POST
@@ -28,11 +30,10 @@ public class AuthenticationService extends AbstractBean implements IAuthenticati
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see edu.hm.sisy.ssma.api.communication.request.IAuthenticationService
-	 *      #authenticate(edu.hm.sisy.ssma.api.object.resource.AuthenticationUser)
+	 * @see edu.hm.sisy.ssma.api.communication.request.IAuthenticationService#login(edu.hm.sisy.ssma.api.object.resource.LoginUser)
 	 */
 	@Override
-	public UserAuthenticationResponse authenticate( AuthenticationUser user )
+	public UserAuthenticationResponse login( LoginUser user )
 	{
 		// Loginmodul initialisieren
 		UserLoginModule loginModule = new UserLoginModule( m_userDAOBean );
@@ -43,5 +44,19 @@ public class AuthenticationService extends AbstractBean implements IAuthenticati
 		UserAuthenticationResponse response = new UserAuthenticationResponse();
 		response.setSessionToken( sessionToken );
 		return response;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see edu.hm.sisy.ssma.api.communication.request.IAuthenticationService#logout(edu.hm.sisy.ssma.api.object.resource.BasicUser)
+	 */
+	@Override
+	public void logout( BasicUser user )
+	{
+		// Logoutmodul initialisieren
+		UserLogoutModule logoutModule = new UserLogoutModule( m_userDAOBean );
+		// Benutzer abmelden und Session invalidieren
+		logoutModule.invalidate( user );
 	}
 }

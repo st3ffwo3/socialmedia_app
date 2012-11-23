@@ -21,20 +21,17 @@ import edu.hm.sisy.ssma.api.object.ErrorConstants;
  * 
  * @author Stefan Wörner
  */
-@JsonPropertyOrder( value = { "username", "password" }, alphabetic = true )
+@JsonPropertyOrder( value = { "username" }, alphabetic = true )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class BaseUser extends AbstractRessourceObject
+public class BasicUser extends AbstractRessourceObject
 {
 
-	private static final long serialVersionUID = -4266512340620426912L;
+	private static final long serialVersionUID = -6331539701733993949L;
 
 	@NotEmpty( message = ErrorConstants.USER_NAME_EMPTY_ERROR_MSG )
 	@Email( message = ErrorConstants.USER_NAME_ILLEGAL_EMAIL_ERROR_MSG )
 	private String m_username;
-
-	@NotEmpty( message = ErrorConstants.USER_PASSWORD_EMPTY_ERROR_MSG )
-	private String m_password;
 
 	/**
 	 * Liefert das Attribut username.
@@ -60,29 +57,6 @@ public class BaseUser extends AbstractRessourceObject
 	}
 
 	/**
-	 * Liefert das Attribut password.
-	 * 
-	 * @return password
-	 */
-	@JsonProperty( "password" )
-	public String getPassword()
-	{
-		return m_password;
-	}
-
-	/**
-	 * Setzt das Attribut password.
-	 * 
-	 * @param password
-	 *            zu setzender Wert für das Attribut password
-	 */
-	@JsonProperty( "password" )
-	public void setPassword( String password )
-	{
-		m_password = password;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see edu.hm.basic.object.AbstractBasicObject#getExclusionList()
@@ -90,7 +64,7 @@ public class BaseUser extends AbstractRessourceObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_password" };
+		return new String[] {};
 	}
 
 	/**
@@ -102,7 +76,7 @@ public class BaseUser extends AbstractRessourceObject
 	public int hashCode()
 	{
 		return HashCodeBuilder.reflectionHashCode( INITIAL_NON_ZERO_ODD_NUMBER, MULTIPLIER_NON_ZERO_ODD_NUMBER, this, true,
-				BaseUser.class, getExclusionList() );
+				BasicUser.class, getExclusionList() );
 	}
 
 	/**
@@ -113,7 +87,7 @@ public class BaseUser extends AbstractRessourceObject
 	@Override
 	public boolean equals( Object obj )
 	{
-		return EqualsBuilder.reflectionEquals( this, obj, true, BaseUser.class, getExclusionList() );
+		return EqualsBuilder.reflectionEquals( this, obj, true, BasicUser.class, getExclusionList() );
 	}
 
 	/**
@@ -127,7 +101,7 @@ public class BaseUser extends AbstractRessourceObject
 		ReflectionToStringBuilder rsb = new ReflectionToStringBuilder( this, ToStringStyle.SHORT_PREFIX_STYLE );
 		rsb.setAppendStatics( false );
 		rsb.setAppendTransients( true );
-		rsb.setUpToClass( BaseUser.class );
+		rsb.setUpToClass( BasicUser.class );
 		rsb.setExcludeFieldNames( getExclusionList() );
 		return rsb.toString();
 	}

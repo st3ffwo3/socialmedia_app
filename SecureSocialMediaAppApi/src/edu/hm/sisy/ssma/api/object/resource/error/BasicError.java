@@ -27,7 +27,7 @@ import edu.hm.sisy.ssma.api.object.AbstractRessourceObject;
 @JsonSerialize( include = Inclusion.NON_NULL )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class BaseError extends AbstractRessourceObject
+public class BasicError extends AbstractRessourceObject
 {
 
 	private static final long serialVersionUID = 8008611549154925609L;
@@ -77,7 +77,7 @@ public class BaseError extends AbstractRessourceObject
 	public int hashCode()
 	{
 		return HashCodeBuilder.reflectionHashCode( INITIAL_NON_ZERO_ODD_NUMBER, MULTIPLIER_NON_ZERO_ODD_NUMBER, this, true,
-				BaseError.class, getExclusionList() );
+				BasicError.class, getExclusionList() );
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class BaseError extends AbstractRessourceObject
 	@Override
 	public boolean equals( Object obj )
 	{
-		return EqualsBuilder.reflectionEquals( this, obj, true, BaseError.class, getExclusionList() );
+		return EqualsBuilder.reflectionEquals( this, obj, true, BasicError.class, getExclusionList() );
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class BaseError extends AbstractRessourceObject
 		ReflectionToStringBuilder rsb = new ReflectionToStringBuilder( this, ToStringStyle.SHORT_PREFIX_STYLE );
 		rsb.setAppendStatics( false );
 		rsb.setAppendTransients( true );
-		rsb.setUpToClass( BaseError.class );
+		rsb.setUpToClass( BasicError.class );
 		rsb.setExcludeFieldNames( getExclusionList() );
 		return rsb.toString();
 	}

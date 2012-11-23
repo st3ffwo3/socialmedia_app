@@ -1,6 +1,8 @@
 package edu.hm.sisy.ssma.bean.database;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -26,6 +28,7 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	 * 
 	 * @see edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal#create(edu.hm.sisy.ssma.internal.object.entity.EntityUser)
 	 */
+	@TransactionAttribute( TransactionAttributeType.REQUIRES_NEW )
 	@Override
 	public EntityUser create( EntityUser user )
 	{
@@ -44,6 +47,7 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	 * 
 	 * @see edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal#read(java.lang.String)
 	 */
+	@TransactionAttribute( TransactionAttributeType.REQUIRES_NEW )
 	@Override
 	public EntityUser read( String userName )
 	{
@@ -55,6 +59,7 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	 * 
 	 * @see edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal#update(edu.hm.sisy.ssma.internal.object.entity.EntityUser)
 	 */
+	@TransactionAttribute( TransactionAttributeType.REQUIRES_NEW )
 	@Override
 	public EntityUser update( EntityUser user )
 	{
@@ -68,6 +73,7 @@ public class UserDAOBean extends AbstractBean implements IUserDAOLocal
 	 * 
 	 * @see edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal#delete(edu.hm.sisy.ssma.internal.object.entity.EntityUser)
 	 */
+	@TransactionAttribute( TransactionAttributeType.REQUIRES_NEW )
 	@Override
 	public void delete( EntityUser user )
 	{
