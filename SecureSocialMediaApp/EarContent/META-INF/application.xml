@@ -7,7 +7,7 @@
   <module>
     <web>
       <web-uri>SecureSocialMediaAppServices.war</web-uri>
-      <context-root>/</context-root>
+      <context-root>/ssms</context-root>
     </web>
   </module>
   <library-directory></library-directory>
