@@ -1,4 +1,4 @@
-package edu.hm.sisy.ssma.api.object.resource.error;
+package edu.hm.sisy.ssma.api.object.resource.response;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -10,48 +10,45 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import edu.hm.sisy.ssma.api.object.AbstractRessourceObject;
 
 /**
- * Basis-Resource für einen Fehler.
+ * Resource für die Antwort auf eine Authentifizierung.
  * 
  * @author Stefan Wörner
  */
-@JsonPropertyOrder( value = { "message" }, alphabetic = true )
-@JsonSerialize( include = Inclusion.NON_NULL )
+@JsonPropertyOrder( value = { "token" }, alphabetic = true )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class ErrorResponse extends AbstractRessourceObject
+public class UserAuthenticationResponse extends AbstractRessourceObject
 {
 
-	private static final long serialVersionUID = 5156935077278227366L;
+	private static final long serialVersionUID = -2222345699688098818L;
 
-	private String m_message;
+	private String m_sessionToken;
 
 	/**
-	 * Liefert das Attribut message.
+	 * Liefert das Attribut sessionToken.
 	 * 
-	 * @return message
+	 * @return sessionToken
 	 */
-	@JsonProperty( "message" )
-	public String getMessage()
+	@JsonProperty( "token" )
+	public String getSessionToken()
 	{
-		return m_message;
+		return m_sessionToken;
 	}
 
 	/**
-	 * Setzt das Attribut message.
+	 * Setzt das Attribut sessionToken.
 	 * 
-	 * @param message
-	 *            zu setzender Wert für das Attribut message
+	 * @param sessionToken
+	 *            zu setzender Wert für das Attribut sessionToken
 	 */
-	@JsonProperty( "message" )
-	public void setMessage( String message )
+	@JsonProperty( "token" )
+	public void setSessionToken( String sessionToken )
 	{
-		m_message = message;
+		m_sessionToken = sessionToken;
 	}
 
 	/**
@@ -62,7 +59,7 @@ public class ErrorResponse extends AbstractRessourceObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] {};
+		return new String[] { "m_sessionToken" };
 	}
 
 	/**
@@ -74,7 +71,7 @@ public class ErrorResponse extends AbstractRessourceObject
 	public int hashCode()
 	{
 		return HashCodeBuilder.reflectionHashCode( INITIAL_NON_ZERO_ODD_NUMBER, MULTIPLIER_NON_ZERO_ODD_NUMBER, this, true,
-				ErrorResponse.class, getExclusionList() );
+				UserAuthenticationResponse.class, getExclusionList() );
 	}
 
 	/**
@@ -85,7 +82,7 @@ public class ErrorResponse extends AbstractRessourceObject
 	@Override
 	public boolean equals( Object obj )
 	{
-		return EqualsBuilder.reflectionEquals( this, obj, true, ErrorResponse.class, getExclusionList() );
+		return EqualsBuilder.reflectionEquals( this, obj, true, UserAuthenticationResponse.class, getExclusionList() );
 	}
 
 	/**
@@ -99,7 +96,7 @@ public class ErrorResponse extends AbstractRessourceObject
 		ReflectionToStringBuilder rsb = new ReflectionToStringBuilder( this, ToStringStyle.SHORT_PREFIX_STYLE );
 		rsb.setAppendStatics( false );
 		rsb.setAppendTransients( true );
-		rsb.setUpToClass( ErrorResponse.class );
+		rsb.setUpToClass( UserAuthenticationResponse.class );
 		rsb.setExcludeFieldNames( getExclusionList() );
 		return rsb.toString();
 	}

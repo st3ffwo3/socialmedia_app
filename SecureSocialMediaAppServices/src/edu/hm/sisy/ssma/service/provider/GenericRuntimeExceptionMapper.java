@@ -6,15 +6,15 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
-import edu.hm.sisy.ssma.api.object.resource.error.ErrorResponse;
+import edu.hm.sisy.ssma.api.object.resource.error.BaseError;
 
 /**
- * ExceptionMapper für eine RuntimeException.
+ * Provider mappt eine RuntimeException in einen entsprechenden HTTP Fehlercode inkl. Fehlermeldung im Content.
  * 
  * @author Stefan Wörner
  */
 @Provider
-public class GenericExceptionMapper implements ExceptionMapper<RuntimeException>
+public class GenericRuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
 {
 
 	@Context
@@ -43,8 +43,8 @@ public class GenericExceptionMapper implements ExceptionMapper<RuntimeException>
 			}
 		}
 
-		ErrorResponse error = new ErrorResponse();
-		error.setMessage( ex.getMessage() );
+		BaseError error = new BaseError();
+		error.getMessages().add( ex.getMessage() );
 
 		// HTTP Fehlercode 500 := Internal Server Error
 		return Response.status( 500 ).entity( error ).build();

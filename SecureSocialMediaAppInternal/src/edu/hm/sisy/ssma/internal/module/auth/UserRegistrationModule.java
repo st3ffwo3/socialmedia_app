@@ -10,8 +10,8 @@ import edu.hm.sisy.ssma.api.object.ApiConstants;
 import edu.hm.sisy.ssma.api.object.resource.RegistrationUser;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
+import edu.hm.sisy.ssma.internal.object.exception.GenericUserRegistrationException;
 import edu.hm.sisy.ssma.internal.object.exception.UnsafeCredentialException;
-import edu.hm.sisy.ssma.internal.object.exception.UserRegistrationException;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -22,7 +22,8 @@ import edu.hm.sisy.ssma.internal.util.CodecUtility;
 public class UserRegistrationModule extends BaseAuthenticationModule
 {
 
-	private static final String STRONG_PASSWORD_PATTERN = "(?=^.{10,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&amp;*()_+}{&quot;:;'?/&gt;.&lt;,])(?!.*\\s).*$";
+	private static final String STRONG_PASSWORD_PATTERN = ""
+			+ "(?=^.{10,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&amp;*()_+}{&quot;:;'?/&gt;.&lt;,])(?!.*\\s).*$";
 
 	private static final String TWO_FACTOR_APPLICATION_NAME = "SSMS";
 
@@ -101,7 +102,7 @@ public class UserRegistrationModule extends BaseAuthenticationModule
 		}
 		catch (Exception ex)
 		{
-			throw new UserRegistrationException();
+			throw new GenericUserRegistrationException();
 		}
 	}
 

@@ -6,7 +6,7 @@ import javax.interceptor.Interceptors;
 
 import edu.hm.sisy.ssma.api.communication.request.IRegistrationService;
 import edu.hm.sisy.ssma.api.object.resource.RegistrationUser;
-import edu.hm.sisy.ssma.api.object.resource.RegistrationUserResponse;
+import edu.hm.sisy.ssma.api.object.resource.response.UserRegistrationResponse;
 import edu.hm.sisy.ssma.internal.bean.AbstractBean;
 import edu.hm.sisy.ssma.internal.bean.database.INodeDAOLocal;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
@@ -36,7 +36,7 @@ public class RegistrationService extends AbstractBean implements IRegistrationSe
 	 * @see edu.hm.sisy.ssma.api.communication.request.IRegistrationService#register(edu.hm.sisy.ssma.api.object.resource.RegistrationUser)
 	 */
 	@Override
-	public RegistrationUserResponse register( RegistrationUser user )
+	public UserRegistrationResponse register( RegistrationUser user )
 	{
 		// Benutzer-Registrierungsmodul initialisieren
 		UserRegistrationModule userRegModule = new UserRegistrationModule( m_userDAOBean );
@@ -49,7 +49,7 @@ public class RegistrationService extends AbstractBean implements IRegistrationSe
 		nodeRegModule.register( user.getNodeAddress() );
 
 		// Response-Objekt erzeugen und QR-Code zurückgeben
-		RegistrationUserResponse response = new RegistrationUserResponse();
+		UserRegistrationResponse response = new UserRegistrationResponse();
 		response.setQrCodeUrl( qrCodeUrl );
 		return response;
 	}

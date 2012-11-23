@@ -8,7 +8,7 @@ import edu.hm.sisy.ssma.api.object.ErrorConstants;
  * 
  * @author Stefan Wörner
  */
-public class UserRegistrationException extends AbstractBasicRuntimeException
+public class GenericUserRegistrationException extends AbstractBasicRuntimeException
 {
 
 	private static final long serialVersionUID = -9084186635079324896L;
@@ -16,8 +16,8 @@ public class UserRegistrationException extends AbstractBasicRuntimeException
 	/**
 	 * Standardkonstruktor.
 	 */
-	public UserRegistrationException()
+	public GenericUserRegistrationException()
 	{
-		super( ErrorConstants.USER_REGISTRATION_FAILED );
+		super( ErrorConstants.GENERIC_USER_REGISTRATION_FAILURE_ERROR_MSG );
 	}
 }

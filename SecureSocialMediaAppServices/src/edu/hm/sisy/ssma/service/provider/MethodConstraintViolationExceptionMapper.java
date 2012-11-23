@@ -7,7 +7,7 @@ import javax.ws.rs.ext.Provider;
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 
-import edu.hm.sisy.ssma.api.object.resource.error.ValidationErrorResponse;
+import edu.hm.sisy.ssma.api.object.resource.error.BaseError;
 
 /**
  * Provider mappt eine MethodConstraintViolationException in einen entsprechenden HTTP Fehlercode inkl. Fehlermeldung im
@@ -26,12 +26,11 @@ public class MethodConstraintViolationExceptionMapper implements ExceptionMapper
 	 */
 	public Response toResponse( MethodConstraintViolationException cex )
 	{
-		ValidationErrorResponse error = new ValidationErrorResponse();
-		error.setMessage( ValidationErrorResponse.DEFAULT_ERROR_MESSAGE );
+		BaseError error = new BaseError();
 
 		for (MethodConstraintViolation<?> violation : cex.getConstraintViolations())
 		{
-			error.getValidationMessages().add( violation.getMessage() );
+			error.getMessages().add( violation.getMessage() );
 		}
 
 		// HTTP Fehlercode 400 := Bad Request

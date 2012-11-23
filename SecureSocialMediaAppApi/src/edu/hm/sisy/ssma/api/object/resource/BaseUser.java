@@ -10,8 +10,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -24,7 +22,6 @@ import edu.hm.sisy.ssma.api.object.ErrorConstants;
  * @author Stefan Wörner
  */
 @JsonPropertyOrder( value = { "username", "password" }, alphabetic = true )
-@JsonSerialize( include = Inclusion.NON_NULL )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
 public class BaseUser extends AbstractRessourceObject

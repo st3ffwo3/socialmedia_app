@@ -49,11 +49,11 @@ public class EntityUser extends AbstractEntityObject
 	private String m_totpSecret;
 
 	@Column( name = "token", length = 255, nullable = true )
-	private String m_ssmaToken;
+	private String m_sessionToken;
 
 	@Temporal( TemporalType.TIMESTAMP )
 	@Column( name = "token_last_updated", nullable = true )
-	private Date m_ssmaTokenLastUpdated;
+	private Date m_sessionTokenLastUpdated;
 
 	/**
 	 * Liefert das Attribut username.
@@ -140,45 +140,45 @@ public class EntityUser extends AbstractEntityObject
 	}
 
 	/**
-	 * Liefert das Attribut ssmaToken.
+	 * Liefert das Attribut sessionToken.
 	 * 
-	 * @return ssmaToken
+	 * @return sessionToken
 	 */
-	public String getSsmaToken()
+	public String getSessionToken()
 	{
-		return m_ssmaToken;
+		return m_sessionToken;
 	}
 
 	/**
-	 * Setzt das Attribut ssmaToken.
+	 * Setzt das Attribut sessionToken.
 	 * 
-	 * @param ssmaToken
-	 *            zu setzender Wert für das Attribut ssmaToken
+	 * @param sessionToken
+	 *            zu setzender Wert für das Attribut sessionToken
 	 */
-	public void setSsmaToken( String ssmaToken )
+	public void setSessionToken( String sessionToken )
 	{
-		m_ssmaToken = ssmaToken;
+		m_sessionToken = sessionToken;
 	}
 
 	/**
-	 * Liefert das Attribut ssmaTokenLastUpdated.
+	 * Liefert das Attribut sessionTokenLastUpdated.
 	 * 
-	 * @return ssmaTokenLastUpdated
+	 * @return sessionTokenLastUpdated
 	 */
-	public Date getSsmaTokenLastUpdated()
+	public Date getSessionTokenLastUpdated()
 	{
-		return m_ssmaTokenLastUpdated;
+		return m_sessionTokenLastUpdated;
 	}
 
 	/**
-	 * Setzt das Attribut ssmaTokenLastUpdated.
+	 * Setzt das Attribut sessionTokenLastUpdated.
 	 * 
-	 * @param ssmaTokenLastUpdated
-	 *            zu setzender Wert für das Attribut ssmaTokenLastUpdated
+	 * @param sessionTokenLastUpdated
+	 *            zu setzender Wert für das Attribut sessionTokenLastUpdated
 	 */
-	public void setSsmaTokenLastUpdated( Date ssmaTokenLastUpdated )
+	public void setSessionTokenLastUpdated( Date sessionTokenLastUpdated )
 	{
-		m_ssmaTokenLastUpdated = ssmaTokenLastUpdated;
+		m_sessionTokenLastUpdated = sessionTokenLastUpdated;
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class EntityUser extends AbstractEntityObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_ssmaToken" };
+		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_sessionToken", "m_sessionTokenLastUpdated" };
 	}
 
 	/**

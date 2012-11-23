@@ -4,7 +4,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import edu.hm.sisy.ssma.api.object.resource.error.ValidationErrorResponse;
+import edu.hm.sisy.ssma.api.object.resource.error.BaseError;
 import edu.hm.sisy.ssma.internal.object.exception.UnsafeCredentialException;
 
 /**
@@ -23,9 +23,8 @@ public class UnsafeCredentialExceptionMapper implements ExceptionMapper<UnsafeCr
 	 */
 	public Response toResponse( UnsafeCredentialException ucex )
 	{
-		ValidationErrorResponse error = new ValidationErrorResponse();
-		error.setMessage( ValidationErrorResponse.DEFAULT_ERROR_MESSAGE );
-		error.getValidationMessages().add( ucex.getMessage() );
+		BaseError error = new BaseError();
+		error.getMessages().add( ucex.getMessage() );
 
 		// HTTP Fehlercode 400 := Bad Request
 		return Response.status( 400 ).entity( error ).build();

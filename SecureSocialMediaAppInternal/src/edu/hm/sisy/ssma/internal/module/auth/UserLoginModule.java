@@ -1,21 +1,22 @@
 package edu.hm.sisy.ssma.internal.module.auth;
 
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang3.StringUtils;
 
-import edu.hm.basic.logging.BasicLogger;
 import edu.hm.sisy.ssma.api.object.ApiConstants;
 import edu.hm.sisy.ssma.api.object.resource.AuthenticationUser;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
+import edu.hm.sisy.ssma.internal.object.exception.GenericUserAuthenticationException;
+import edu.hm.sisy.ssma.internal.object.exception.UserAuthenticationFailedException;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -26,9 +27,11 @@ import edu.hm.sisy.ssma.internal.util.CodecUtility;
 public class UserLoginModule extends BaseAuthenticationModule
 {
 
-	private static final int SSMA_TOKEN_SIZE = 20;
+	private static final int SESSION_TOKEN_SIZE = 20;
 
 	private static int TOTP_WINDOW_SIZE = 1;
+
+	private static final long SESSION_TIME_FRAME = 10 * 60 * 1000; // 10 Minuten in Millisekunden
 
 	/**
 	 * Standardkonstruktor.
@@ -41,16 +44,105 @@ public class UserLoginModule extends BaseAuthenticationModule
 		super( userDAOBean );
 	}
 
-	// TODO Möglichkeit vorsehen um Benutzer nur anhand des SSMA Tokens zu authentifizieren
-
 	/**
-	 * Authentifiziert einen Benutzer anhand seines Benutzernamens, Passworts und dem TOTP Token.
+	 * Authentifiziert einen Benutzer anhand seines Benutzernamens, Passworts und dem TOTP-Token bzw. anhand seines
+	 * Benutzernamens und dem Session-Token.
 	 * 
 	 * @param user
 	 *            Zu authentifizierender Benutzer
 	 * @return Authentifizierungs-Flag
 	 */
-	public boolean authenticate( AuthenticationUser user )
+	public String authenticate( AuthenticationUser user )
+	{
+		try
+		{
+			if (authenticateSession( user ))
+			{
+				// Benutzer in der Datenbank suchen
+				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+
+				// Authentifizierung mit Benutzernamen/SessionToken war erfolgreich
+				// => LastUpdated aktualisieren
+				eUser.setSessionTokenLastUpdated( new Date() );
+
+				// Session Token persistieren
+				eUser = m_userDAOBean.update( eUser );
+
+				// Session Token zurückgeben
+				return eUser.getSessionToken();
+			}
+			else if (authenticateUser( user ))
+			{
+				// Benutzer in der Datenbank suchen
+				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+
+				// Authentifizierung mit Benutzernamen/Passwort/TOTP-Token war erfolgreich
+				// => Session Token generiern
+				eUser.setSessionToken( genSessionToken() );
+				eUser.setSessionTokenLastUpdated( new Date() );
+
+				// Session Token persistieren
+				eUser = m_userDAOBean.update( eUser );
+
+				// Session Token zurückgeben
+				return eUser.getSessionToken();
+			}
+
+			throw new UserAuthenticationFailedException();
+		}
+		catch (RuntimeException rex)
+		{
+			throw rex;
+		}
+		catch (Exception ex)
+		{
+			throw new GenericUserAuthenticationException();
+		}
+	}
+
+	private boolean authenticateSession( AuthenticationUser user )
+	{
+		boolean userExist = true;
+
+		// Validierung der Eingabeparameter
+		if (user == null || StringUtils.isBlank( user.getSessionToken() ))
+		{
+			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
+			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
+			userExist = false;
+
+			user = new AuthenticationUser();
+			user.setUsername( "" );
+			user.setSessionToken( "" );
+		}
+
+		// Benutzer in der Datenbank suchen
+		EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+
+		if (eUser == null || StringUtils.isBlank( eUser.getDigest() ) || StringUtils.isBlank( eUser.getSalt() )
+				|| StringUtils.isBlank( eUser.getTotpSecret() ))
+		{
+			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
+			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
+			userExist = false;
+
+			eUser = new EntityUser();
+			eUser.setSessionToken( "000000000000000000000000000=" );
+			eUser.setSessionTokenLastUpdated( new Date( 0 ) );
+		}
+
+		// Auth-Flag-Indikator mit userExist Flag initialisieren
+		boolean authSuccessful = userExist;
+		// Session-Token auf Gleichheit prüfen
+		authSuccessful = authSuccessful && StringUtils.equals( user.getSessionToken(), eUser.getSessionToken() );
+		// Ablaufdatum des Session-Token prüfen
+		authSuccessful = authSuccessful && checkSessionValidity( eUser.getSessionTokenLastUpdated().getTime() );
+
+		// Auth-Flag-Indikator zurückgeben
+		return authSuccessful;
+	}
+
+	private boolean authenticateUser( AuthenticationUser user )
 	{
 		try
 		{
@@ -107,24 +199,24 @@ public class UserLoginModule extends BaseAuthenticationModule
 			// TOTP Token auf Korrektheit prüfen
 			authSuccessful = authSuccessful && validateTotpToken( eUser.getTotpSecret(), user.getTotpToken() );
 
-			// TODO SSMA Token generieren und im Nutzer speichern
-			// TODO SSMA Token zurückgeben statt boolean
-
 			// Auth-Flag-Indikator zurückgeben
 			return authSuccessful;
 		}
-		catch (UnsupportedEncodingException ueex)
+		catch (RuntimeException rex)
 		{
-			// TODO FineTuning Exception Handling
-			BasicLogger.logError( this, ueex.getMessage() );
-			return false;
+			throw rex;
 		}
-		catch (NoSuchAlgorithmException nsaex)
+		catch (Exception ex)
 		{
-			// TODO FineTuning Exception Handling
-			BasicLogger.logError( this, nsaex.getMessage() );
-			return false;
+			throw new GenericUserAuthenticationException();
 		}
+	}
+
+	private boolean checkSessionValidity( long lastUpdated )
+	{
+		// Aktuelle Zeit abzüglich des Zeitfensers von 10 Minuten muss kleiner (älter) sein als das letzte
+		// Aktualisierungsdatum der Session
+		return (new Date().getTime() - SESSION_TIME_FRAME) < lastUpdated;
 	}
 
 	/**
@@ -134,20 +226,20 @@ public class UserLoginModule extends BaseAuthenticationModule
 	 * @throws NoSuchAlgorithmException
 	 *             Algorithmus existiert nicht
 	 */
-	private static String genSsmaToken() throws NoSuchAlgorithmException
+	private static String genSessionToken() throws NoSuchAlgorithmException
 	{
 		// Secure Random Instanz erzeugen um Zufallswerte zu erzeugen
 		SecureRandom random = SecureRandom.getInstance( RANDOM_GENERATION_ALGORITHM );
 		// Buffer für Token initialisieren mit einer Länge von 160 bits
-		byte[] ssmaTokenBytes = new byte[SSMA_TOKEN_SIZE];
+		byte[] sessionTokenBytes = new byte[SESSION_TOKEN_SIZE];
 		// Buffer mit Zufallswerten befüllen
-		random.nextBytes( ssmaTokenBytes );
+		random.nextBytes( sessionTokenBytes );
 
 		// Token Base64 encodieren
-		String ssmaToken = CodecUtility.byteToBase64( ssmaTokenBytes );
+		String sessionToken = CodecUtility.byteToBase64( sessionTokenBytes );
 
 		// Token zurückgeben
-		return ssmaToken;
+		return sessionToken;
 	}
 
 	/**
@@ -180,8 +272,6 @@ public class UserLoginModule extends BaseAuthenticationModule
 			}
 			catch (Exception e)
 			{
-				// TODO FineTuning Exception Handling
-				BasicLogger.logError( this, e.getMessage() );
 				return false;
 			}
 

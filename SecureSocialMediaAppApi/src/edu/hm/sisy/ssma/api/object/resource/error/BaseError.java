@@ -1,4 +1,7 @@
-package edu.hm.sisy.ssma.api.object.resource;
+package edu.hm.sisy.ssma.api.object.resource.error;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -16,42 +19,42 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import edu.hm.sisy.ssma.api.object.AbstractRessourceObject;
 
 /**
- * Resource für die Antwort auf eine Benutzerregistrierung.
+ * Basis-Resource für einen Fehler.
  * 
  * @author Stefan Wörner
  */
-@JsonPropertyOrder( value = { "qrcode" }, alphabetic = true )
+@JsonPropertyOrder( value = { "messages" }, alphabetic = true )
 @JsonSerialize( include = Inclusion.NON_NULL )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class RegistrationUserResponse extends AbstractRessourceObject
+public class BaseError extends AbstractRessourceObject
 {
 
-	private static final long serialVersionUID = 774880264543015352L;
+	private static final long serialVersionUID = 8008611549154925609L;
 
-	private String m_qrCodeUrl;
+	private List<String> m_messages = new ArrayList<String>();
 
 	/**
-	 * Liefert das Attribut qrCodeUrl.
+	 * Liefert das Attribut messages.
 	 * 
-	 * @return qrCodeUrl
+	 * @return messages
 	 */
-	@JsonProperty( "qrcode" )
-	public String getQrCodeUrl()
+	@JsonProperty( "messages" )
+	public List<String> getMessages()
 	{
-		return m_qrCodeUrl;
+		return m_messages;
 	}
 
 	/**
-	 * Setzt das Attribut qrCodeUrl.
+	 * Setzt das Attribut messages.
 	 * 
-	 * @param qrCodeUrl
-	 *            zu setzender Wert für das Attribut qrCodeUrl
+	 * @param messages
+	 *            zu setzender Wert für das Attribut messages
 	 */
-	@JsonProperty( "qrcode" )
-	public void setQrCodeUrl( String qrCodeUrl )
+	@JsonProperty( "messages" )
+	public void setMessages( List<String> messages )
 	{
-		m_qrCodeUrl = qrCodeUrl;
+		m_messages = messages;
 	}
 
 	/**
@@ -62,7 +65,7 @@ public class RegistrationUserResponse extends AbstractRessourceObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_qrCodeUrl" };
+		return new String[] {};
 	}
 
 	/**
@@ -74,7 +77,7 @@ public class RegistrationUserResponse extends AbstractRessourceObject
 	public int hashCode()
 	{
 		return HashCodeBuilder.reflectionHashCode( INITIAL_NON_ZERO_ODD_NUMBER, MULTIPLIER_NON_ZERO_ODD_NUMBER, this, true,
-				RegistrationUserResponse.class, getExclusionList() );
+				BaseError.class, getExclusionList() );
 	}
 
 	/**
@@ -85,7 +88,7 @@ public class RegistrationUserResponse extends AbstractRessourceObject
 	@Override
 	public boolean equals( Object obj )
 	{
-		return EqualsBuilder.reflectionEquals( this, obj, true, RegistrationUserResponse.class, getExclusionList() );
+		return EqualsBuilder.reflectionEquals( this, obj, true, BaseError.class, getExclusionList() );
 	}
 
 	/**
@@ -99,7 +102,7 @@ public class RegistrationUserResponse extends AbstractRessourceObject
 		ReflectionToStringBuilder rsb = new ReflectionToStringBuilder( this, ToStringStyle.SHORT_PREFIX_STYLE );
 		rsb.setAppendStatics( false );
 		rsb.setAppendTransients( true );
-		rsb.setUpToClass( RegistrationUserResponse.class );
+		rsb.setUpToClass( BaseError.class );
 		rsb.setExcludeFieldNames( getExclusionList() );
 		return rsb.toString();
 	}

@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.spi.validation.ValidateRequest;
 
 import edu.hm.sisy.ssma.api.object.resource.RegistrationUser;
-import edu.hm.sisy.ssma.api.object.resource.RegistrationUserResponse;
+import edu.hm.sisy.ssma.api.object.resource.response.UserRegistrationResponse;
 
 /**
  * REST-Service für die Benutzerregistrierung. Verfügbare Aktionen: POST
@@ -35,5 +35,5 @@ public interface IRegistrationService
 	 */
 	@POST
 	@Path( "" )
-	RegistrationUserResponse register( @Valid RegistrationUser user );
+	UserRegistrationResponse register( @Valid RegistrationUser user );
 }

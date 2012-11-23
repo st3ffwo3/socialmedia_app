@@ -6,8 +6,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import edu.hm.sisy.ssma.api.object.ErrorConstants;
@@ -19,7 +17,6 @@ import edu.hm.sisy.ssma.api.object.ErrorConstants;
  * @author Stefan Wörner
  */
 @JsonPropertyOrder( value = { "username", "password", "node-address" }, alphabetic = true )
-@JsonSerialize( include = Inclusion.NON_NULL )
 @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
 public class RegistrationUser extends BaseUser
