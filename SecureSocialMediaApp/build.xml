@@ -58,6 +58,7 @@
 					<include name="server/${jboss6.server.name}/deployers/**/*.jar" />
 					-->
 					<include name="client/*.jar" />
+					<include name="common/lib/hibernate-validator*.jar" />
 					<include name="server/${jboss6.server.name}/deployers/resteasy.deployer/**/*.jar" />
 				</fileset>
 			</path>
