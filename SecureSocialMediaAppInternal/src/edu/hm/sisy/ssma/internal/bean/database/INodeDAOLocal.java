@@ -16,27 +16,27 @@ public interface INodeDAOLocal
 {
 
 	/**
-	 * Estellt oder aktualisiert die Infos zu einem Knoten im Systemverbund in der Datenbank.
+	 * Estellt oder aktualisiert die Infos zu einem Node im Cluster/System in der Datenbank.
 	 * 
 	 * @param node
-	 *            Zu erstellender/aktualisierender Knoten
-	 * @return Erstellter/Aktualisierter Knoten
+	 *            Zu erstellender/aktualisierender Node
+	 * @return Erstellter/Aktualisierter Node
 	 */
 	EntityNode createOrUpdate( EntityNode node );
 
 	/**
-	 * Liest einen Knoten im Systemverbund anhand der Adresse aus der Datenbank aus.
+	 * Liest einen Node im Cluster/System anhand der Adresse aus der Datenbank aus.
 	 * 
 	 * @param address
-	 *            Adresse des Knoten
-	 * @return Gefundener Knoten oder NULL
+	 *            Adresse des Node
+	 * @return Gefundener Node oder NULL
 	 */
 	EntityNode read( String address );
 
 	/**
-	 * Liest alle Knoten im Systemverbund aus der Datenbank aus.
+	 * Liest alle Nodes im Cluster/System aus der Datenbank aus.
 	 * 
-	 * @return Liste mit gefundene Knoten oder leere Liste
+	 * @return Liste mit gefundene Nodes oder leere Liste
 	 */
 	List<EntityNode> readAll();
 }
