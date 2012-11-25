@@ -35,7 +35,8 @@ public class NodeRegistryService extends AbstractBean implements INodeRegistrySe
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see edu.hm.sisy.ssma.api.communication.request.INodeRegistryService#findAll(java.lang.String)
+	 * @see edu.hm.sisy.ssma.api.communication.request.INodeRegistryService#findAll(java.lang.String,
+	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	public List<BasicNode> findAll( String ssmsToken, HttpServletResponse response )
