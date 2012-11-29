@@ -33,12 +33,12 @@ public class EntityUser extends AbstractEntityObject
 	private static final long serialVersionUID = -4931591312319154051L;
 
 	@Id
-	@Column( name = "username", length = 255, nullable = false, unique = true )
+	@Column( name = "id", length = 255, nullable = false, unique = true )
 	@NotEmpty( message = ErrorConstants.USER_NAME_EMPTY_ERROR_MSG )
 	@Email( message = ErrorConstants.USER_NAME_ILLEGAL_EMAIL_ERROR_MSG )
 	private String m_username;
 
-	@Column( name = "pwd", length = 255, nullable = false )
+	@Column( name = "digest", length = 255, nullable = false )
 	@NotEmpty( message = ErrorConstants.USER_PASSWORD_EMPTY_ERROR_MSG )
 	private String m_digest;
 
@@ -48,14 +48,14 @@ public class EntityUser extends AbstractEntityObject
 	@Column( name = "secret", length = 255, nullable = false )
 	private String m_totpSecret;
 
-	@Column( name = "reconnect", length = 255, nullable = false )
+	@Column( name = "reconn", length = 255, nullable = false )
 	private String m_totpResetToken;
 
 	@Column( name = "token", length = 255, nullable = true )
 	private String m_sessionToken;
 
 	@Temporal( TemporalType.TIMESTAMP )
-	@Column( name = "date", nullable = true )
+	@Column( name = "stamp", nullable = true )
 	private Date m_sessionTokenLastUpdated;
 
 	/**
