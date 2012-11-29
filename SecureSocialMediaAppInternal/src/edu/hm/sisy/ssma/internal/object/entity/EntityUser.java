@@ -45,8 +45,11 @@ public class EntityUser extends AbstractEntityObject
 	@Column( name = "salt", length = 255, nullable = false )
 	private String m_salt;
 
-	@Column( name = "secret", length = 255, nullable = true )
+	@Column( name = "secret", length = 255, nullable = false )
 	private String m_totpSecret;
+
+	@Column( name = "reconnect", length = 255, nullable = false )
+	private String m_totpResetToken;
 
 	@Column( name = "token", length = 255, nullable = true )
 	private String m_sessionToken;
@@ -140,6 +143,27 @@ public class EntityUser extends AbstractEntityObject
 	}
 
 	/**
+	 * Liefert das Attribut totpResetToken.
+	 * 
+	 * @return totpResetToken
+	 */
+	public String getTotpResetToken()
+	{
+		return m_totpResetToken;
+	}
+
+	/**
+	 * Setzt das Attribut totpResetToken.
+	 * 
+	 * @param totpResetToken
+	 *            zu setzender Wert für das Attribut totpResetToken
+	 */
+	public void setTotpResetToken( String totpResetToken )
+	{
+		m_totpResetToken = totpResetToken;
+	}
+
+	/**
 	 * Liefert das Attribut sessionToken.
 	 * 
 	 * @return sessionToken
@@ -189,7 +213,8 @@ public class EntityUser extends AbstractEntityObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_sessionToken", "m_sessionTokenLastUpdated" };
+		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_totpResetToken", "m_sessionToken",
+				"m_sessionTokenLastUpdated" };
 	}
 
 	/**

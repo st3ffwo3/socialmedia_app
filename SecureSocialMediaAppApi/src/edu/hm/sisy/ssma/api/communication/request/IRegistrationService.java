@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.spi.validation.ValidateRequest;
 
+import edu.hm.sisy.ssma.api.object.resource.ReRegistrationUser;
 import edu.hm.sisy.ssma.api.object.resource.RegistrationUser;
 import edu.hm.sisy.ssma.api.object.resource.response.UserRegistrationResponse;
 
@@ -31,9 +32,21 @@ public interface IRegistrationService
 	 * 
 	 * @param user
 	 *            Benutzer
-	 * @return QR-Code URL
+	 * @return QR-Code URL und TOTP Reset Token
 	 */
 	@POST
 	@Path( "register" )
 	UserRegistrationResponse register( @Valid RegistrationUser user );
+
+	/**
+	 * Nimmt eine erneute Registrierung des Benutzers vor. (Wird benötigt falls Smartphone mit TOTP Generator abhanden
+	 * gekommen ist usw.)
+	 * 
+	 * @param user
+	 *            Benutzer
+	 * @return Neuer QR-Code URL und neuer TOTP Reset Token
+	 */
+	@POST
+	@Path( "re-register" )
+	UserRegistrationResponse reRegister( @Valid ReRegistrationUser user );
 }

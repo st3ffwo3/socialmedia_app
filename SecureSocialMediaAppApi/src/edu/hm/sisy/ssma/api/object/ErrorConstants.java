@@ -54,9 +54,20 @@ public final class ErrorConstants
 	public static final String NODE_ADDRESS_EMPTY_ERROR_MSG = "Die Adresse des Nodes wurde nicht übertragen.";
 
 	/**
+	 * Fehlermeldung für einen leere TOTP Reset Token.
+	 */
+	public static final String RESET_TOKEN_EMPTY_ERROR_MSG = "Bitte geben Sie ihren gültigen Reset Token an.";
+
+	/**
 	 * Fehlermeldung für allgemeine Fehler bei der Benutzerregistrierung.
 	 */
 	public static final String GENERIC_USER_REGISTRATION_FAILURE_ERROR_MSG = "Bei der Benutzerregistrierung ist ein Fehler aufgetreten. "
+			+ "Versuchen Sie es später wieder.";
+
+	/**
+	 * Fehlermeldung für allgemeine Fehler bei der Benutzer-Re-Registrierung.
+	 */
+	public static final String GENERIC_USER_RE_REGISTRATION_FAILURE_ERROR_MSG = "Bei der Benutzer-Re-Registrierung ist ein Fehler aufgetreten. "
 			+ "Versuchen Sie es später wieder.";
 
 	/**

@@ -2,7 +2,6 @@ package edu.hm.sisy.ssma.api.object.resource;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -18,9 +17,9 @@ import edu.hm.sisy.ssma.api.object.ErrorConstants;
  * @author Stefan Wörner
  */
 @JsonPropertyOrder( value = { "username", "password", "totp-token" }, alphabetic = true )
-@Produces( { MediaType.APPLICATION_JSON } )
+// @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class LoginUser extends BasicUser
+public class LoginUser extends BasicAuthUser
 {
 
 	private static final long serialVersionUID = 9119069304967065381L;

@@ -3,11 +3,14 @@ package edu.hm.sisy.ssma.internal.module.auth;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
 import edu.hm.sisy.ssma.api.object.ApiConstants;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
+import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
  * Basisklasse für die Registrierung und Authentifizierung von Benutzern.
@@ -16,6 +19,19 @@ import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
  */
 public class BasicAuthenticationModule
 {
+
+	private static final int TOTP_RESET_TOKEN_SIZE = 10;
+
+	private static final String TWO_FACTOR_APPLICATION_NAME = "SSMS";
+
+	private static final int TWO_FACTOR_SECRET_SIZE = 10;
+
+	private static final int TWO_FACTOR_NUM_OF_SCRATCH_CODES = 5;
+
+	private static final int TWO_FACTOR_SCRATCH_CODE_SIZE = 8;
+
+	private static final String TWO_FACTOR_QRCODE_BASE_URL = "https://chart.googleapis.com/"
+			+ "chart?chs=200x200&cht=qr&chld=M|0&chl=otpauth://totp/%s:%s?secret=%s";
 
 	/**
 	 * Referenz auf User DAO Bean.
@@ -99,5 +115,66 @@ public class BasicAuthenticationModule
 
 		// Salted Hash zurückgeben
 		return hash;
+	}
+
+	/**
+	 * Generiert einen zufälligen Token für den Reset der TOTP Verknüpfung und gibt diesen Base32 codiert zurück.
+	 * 
+	 * @return Base32 codierter TOTP Reset Token
+	 * @throws NoSuchAlgorithmException
+	 *             Algorithmus existiert nicht
+	 */
+	protected static String genTotpResetToken() throws NoSuchAlgorithmException
+	{
+		// Secure Random Instanz erzeugen um Zufallswerte zu erzeugen
+		SecureRandom random = SecureRandom.getInstance( RANDOM_GENERATION_ALGORITHM );
+		// Buffer für Token initialisieren mit einer Länge von 80 bits => Ergibt Base32 codiert 16 Zeichen
+		byte[] resetTokenBytes = new byte[TOTP_RESET_TOKEN_SIZE];
+		// Buffer mit Zufallswerten befüllen
+		random.nextBytes( resetTokenBytes );
+
+		// Token Base32 encodieren
+		String resetToken = CodecUtility.byteToBase32( resetTokenBytes );
+
+		// Token zurückgeben
+		return resetToken.toUpperCase();
+	}
+
+	/**
+	 * Generiert das 2-Faktor Secret für die Kopplung mit dem Google Authenticator.
+	 * 
+	 * @return 2-Faktor Secret
+	 * @throws NoSuchAlgorithmException
+	 *             Algorithmus existiert nicht
+	 */
+	protected static byte[] genTotpSecret() throws NoSuchAlgorithmException
+	{
+		// Secure Random Instanz erzeugen um Zufallswerte zu erzeugen
+		SecureRandom random = SecureRandom.getInstance( RANDOM_GENERATION_ALGORITHM );
+		// Buffer initialisieren mit einer Länge von 2640 bits (80 + 40 * 64)
+		byte[] buffer = new byte[TWO_FACTOR_SECRET_SIZE + TWO_FACTOR_NUM_OF_SCRATCH_CODES * TWO_FACTOR_SCRATCH_CODE_SIZE];
+		// Buffer mit Zufallswerten befüllen
+		random.nextBytes( buffer );
+
+		// Secret Key mit 10 Bytes erzeugen
+		byte[] secretKey = Arrays.copyOf( buffer, TWO_FACTOR_SECRET_SIZE );
+
+		// Secret Key zurückgeben
+		return secretKey;
+	}
+
+	/**
+	 * Gibt die URL zur Generierung und Anzeige des QR-Codes zurück. Der Benutzer fotografiert diese mit der Google
+	 * Authenticator App auf dem Smartphone ab, um den Secret Key abzuspeichern.
+	 * 
+	 * @param username
+	 *            Benutzername
+	 * @param totpSecret
+	 *            2-Faktor Secret
+	 * @return URL für den QR-Code
+	 */
+	protected static String getQRCodeURL( String username, String totpSecret )
+	{
+		return String.format( TWO_FACTOR_QRCODE_BASE_URL, TWO_FACTOR_APPLICATION_NAME, username, totpSecret );
 	}
 }

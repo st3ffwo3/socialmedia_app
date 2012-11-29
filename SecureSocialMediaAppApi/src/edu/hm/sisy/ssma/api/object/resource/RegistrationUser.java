@@ -1,7 +1,6 @@
 package edu.hm.sisy.ssma.api.object.resource;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -17,9 +16,9 @@ import edu.hm.sisy.ssma.api.object.ErrorConstants;
  * @author Stefan Wörner
  */
 @JsonPropertyOrder( value = { "username", "password", "node-address" }, alphabetic = true )
-@Produces( { MediaType.APPLICATION_JSON } )
+// @Produces( { MediaType.APPLICATION_JSON } )
 @Consumes( { MediaType.APPLICATION_JSON } )
-public class RegistrationUser extends BasicUser
+public class RegistrationUser extends BasicAuthUser
 {
 
 	private static final long serialVersionUID = 9119069304967065381L;

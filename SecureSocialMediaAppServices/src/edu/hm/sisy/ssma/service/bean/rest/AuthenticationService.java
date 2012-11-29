@@ -36,13 +36,22 @@ public class AuthenticationService extends AbstractBean implements IAuthenticati
 	@Override
 	public void login( LoginUser user, String ssmsToken, HttpServletResponse response )
 	{
-		// SSMS Token decodieren und TokenUser erstellen
-		TokenUser tUser = new TokenUser( ssmsToken );
-
 		// Loginmodul initialisieren
 		UserLoginModule loginModule = new UserLoginModule( m_userDAOBean );
-		// Benutzer authentifizieren
-		ssmsToken = loginModule.authenticate( user, tUser );
+
+		if (user != null)
+		{
+			// Benutzer authentifizieren
+			ssmsToken = loginModule.authenticate( user );
+		}
+		else
+		{
+			// SSMS Token decodieren und TokenUser erstellen
+			TokenUser tUser = new TokenUser( ssmsToken );
+			// Benutzer authentifizieren
+			ssmsToken = loginModule.authenticate( tUser );
+		}
+
 		// SSMS-Token in den Header setzten
 		response.setHeader( "ssms-token", ssmsToken );
 	}

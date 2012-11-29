@@ -1,6 +1,5 @@
 package edu.hm.sisy.ssma.api.object.resource.response;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -20,13 +19,15 @@ import edu.hm.sisy.ssma.api.object.AbstractRessourceObject;
  */
 @JsonPropertyOrder( value = { "qrcode" }, alphabetic = true )
 @Produces( { MediaType.APPLICATION_JSON } )
-@Consumes( { MediaType.APPLICATION_JSON } )
+// @Consumes( { MediaType.APPLICATION_JSON } )
 public class UserRegistrationResponse extends AbstractRessourceObject
 {
 
 	private static final long serialVersionUID = 774880264543015352L;
 
 	private String m_qrCodeUrl;
+
+	private String m_resetToken;
 
 	/**
 	 * Liefert das Attribut qrCodeUrl.
@@ -52,6 +53,29 @@ public class UserRegistrationResponse extends AbstractRessourceObject
 	}
 
 	/**
+	 * Liefert das Attribut resetToken.
+	 * 
+	 * @return resetToken
+	 */
+	@JsonProperty( "reset-token" )
+	public String getResetToken()
+	{
+		return m_resetToken;
+	}
+
+	/**
+	 * Setzt das Attribut resetToken.
+	 * 
+	 * @param resetToken
+	 *            zu setzender Wert für das Attribut resetToken
+	 */
+	@JsonProperty( "reset-token" )
+	public void setResetToken( String resetToken )
+	{
+		m_resetToken = resetToken;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see edu.hm.basic.object.AbstractBasicObject#getExclusionList()
@@ -59,7 +83,7 @@ public class UserRegistrationResponse extends AbstractRessourceObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_qrCodeUrl" };
+		return new String[] { "m_qrCodeUrl", "m_resetToken" };
 	}
 
 	/**
