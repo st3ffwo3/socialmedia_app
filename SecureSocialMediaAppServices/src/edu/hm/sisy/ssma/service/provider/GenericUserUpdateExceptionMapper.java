@@ -5,16 +5,16 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import edu.hm.sisy.ssma.api.object.resource.error.BasicError;
-import edu.hm.sisy.ssma.internal.object.exception.GenericUserReRegistrationException;
+import edu.hm.sisy.ssma.internal.object.exception.GenericUserUpdateException;
 
 /**
- * Provider mappt eine GenericUserReRegistrationException in einen entsprechenden HTTP Fehlercode inkl. Fehlermeldung im
+ * Provider mappt eine GenericUserUpdateException in einen entsprechenden HTTP Fehlercode inkl. Fehlermeldung im
  * Content.
  * 
  * @author Stefan Wörner
  */
 @Provider
-public class GenericUserReRegistrationExceptionMapper implements ExceptionMapper<GenericUserReRegistrationException>
+public class GenericUserUpdateExceptionMapper implements ExceptionMapper<GenericUserUpdateException>
 {
 
 	/**
@@ -22,10 +22,10 @@ public class GenericUserReRegistrationExceptionMapper implements ExceptionMapper
 	 * 
 	 * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Throwable)
 	 */
-	public Response toResponse( GenericUserReRegistrationException urrex )
+	public Response toResponse( GenericUserUpdateException uuex )
 	{
 		BasicError error = new BasicError();
-		error.getMessages().add( urrex.getMessage() );
+		error.getMessages().add( uuex.getMessage() );
 
 		// HTTP Fehlercode 500 := Internal Server Error
 		return Response.status( 500 ).entity( error ).build();

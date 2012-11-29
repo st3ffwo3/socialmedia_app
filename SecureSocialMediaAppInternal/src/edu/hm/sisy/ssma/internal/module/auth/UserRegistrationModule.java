@@ -1,7 +1,5 @@
 package edu.hm.sisy.ssma.internal.module.auth;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +10,6 @@ import edu.hm.sisy.ssma.api.object.resource.RegistrationUser;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
 import edu.hm.sisy.ssma.internal.object.exception.GenericUserRegistrationException;
-import edu.hm.sisy.ssma.internal.object.exception.UnsafeCredentialException;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -22,9 +19,6 @@ import edu.hm.sisy.ssma.internal.util.CodecUtility;
  */
 public class UserRegistrationModule extends BasicAuthenticationModule
 {
-
-	private static final String STRONG_PASSWORD_PATTERN = ""
-			+ "(?=^.{10,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&amp;*()_+}{&quot;:;'?/&gt;.&lt;,])(?!.*\\s).*$";
 
 	/**
 	 * Standardkonstruktor.
@@ -100,33 +94,5 @@ public class UserRegistrationModule extends BasicAuthenticationModule
 		{
 			throw new GenericUserRegistrationException();
 		}
-	}
-
-	private static void validateCredentialComplexity( String credential )
-	{
-		if (!credential.matches( STRONG_PASSWORD_PATTERN ))
-		{
-			throw new UnsafeCredentialException();
-		}
-	}
-
-	/**
-	 * Generiert einen zufälligen Salt für die Erzeugung von salted Passwort-Hashs.
-	 * 
-	 * @return Salt
-	 * @throws NoSuchAlgorithmException
-	 *             Algorithmus existiert nicht
-	 */
-	private static byte[] genSalt() throws NoSuchAlgorithmException
-	{
-		// Secure Random Instanz erzeugen um Zufallswerte zu erzeugen
-		SecureRandom random = SecureRandom.getInstance( RANDOM_GENERATION_ALGORITHM );
-		// Buffer für Salt initialisieren mit einer Länge von 64 bits
-		byte[] salt = new byte[8];
-		// Buffer mit Zufallswerten befüllen
-		random.nextBytes( salt );
-
-		// Salt zurückgeben
-		return salt;
 	}
 }

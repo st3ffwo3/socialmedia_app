@@ -81,4 +81,16 @@ public final class ErrorConstants
 	 */
 	public static final String USER_AUTHENTICATION_FAILED_ERROR_MSG = "Die Authentifizierung ist fehlgeschlagen: "
 			+ "Ihre Authentifizierungsdaten sind nicht korrekt.";
+
+	/**
+	 * Fehlermeldung für eine ungültiger Credentials Aktualisierung.
+	 */
+	public static final String ILLEGAL_USER_UPDATE_ERROR_MSG = "Aktualisierung der Benutzer-Credentials fehlgeschlagen: "
+			+ "Sie können nur Ihre eigenen Benutzerdaten ändern.";
+
+	/**
+	 * Fehlermeldung für allgemeine Fehler bei der Benutzeraktualisierung.
+	 */
+	public static final String GENERIC_USER_UPDATE_ERROR_MSG = "Bei der Aktualisierung ihrer Benutzer-Credentials ist ein Fehler aufgetregen. "
+			+ "Versuchen Sie es später wieder.";
 }

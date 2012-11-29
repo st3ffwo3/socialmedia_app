@@ -55,7 +55,7 @@ public class EntityUser extends AbstractEntityObject
 	private String m_sessionToken;
 
 	@Temporal( TemporalType.TIMESTAMP )
-	@Column( name = "token_last_updated", nullable = true )
+	@Column( name = "date", nullable = true )
 	private Date m_sessionTokenLastUpdated;
 
 	/**

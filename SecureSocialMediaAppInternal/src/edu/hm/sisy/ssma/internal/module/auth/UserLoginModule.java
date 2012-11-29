@@ -302,7 +302,7 @@ public class UserLoginModule extends BasicAuthenticationModule
 
 			try
 			{
-				hash = genTotpToken( secretKey, t + i );
+				hash = genTotpVerificationToken( secretKey, t + i );
 			}
 			catch (Exception e)
 			{
@@ -363,7 +363,7 @@ public class UserLoginModule extends BasicAuthenticationModule
 	 * @see http://code.google.com/p/google-authenticator
 	 * @see https://tools.ietf.org/html/rfc6238
 	 */
-	private static int genTotpToken( byte[] key, long t ) throws NoSuchAlgorithmException, InvalidKeyException
+	private static int genTotpVerificationToken( byte[] key, long t ) throws NoSuchAlgorithmException, InvalidKeyException
 	{
 		byte[] data = new byte[8];
 		long value = t;
@@ -399,11 +399,15 @@ public class UserLoginModule extends BasicAuthenticationModule
 	{
 		// Benutzer in der Datenbank suchen
 		EntityUser eUser = m_userDAOBean.read( user.getUsername() );
-		// Authentifizierung ist fehlgeschlagen
-		// => Session Token invalidieren
-		eUser.setSessionToken( null );
-		eUser.setSessionTokenLastUpdated( null );
-		// Invalidiertes Session Token persistieren
-		eUser = m_userDAOBean.update( eUser );
+
+		if (eUser != null)
+		{
+			// Authentifizierung ist fehlgeschlagen
+			// => Session Token invalidieren
+			eUser.setSessionToken( null );
+			eUser.setSessionTokenLastUpdated( null );
+			// Invalidiertes Session Token persistieren
+			eUser = m_userDAOBean.update( eUser );
+		}
 	}
 }

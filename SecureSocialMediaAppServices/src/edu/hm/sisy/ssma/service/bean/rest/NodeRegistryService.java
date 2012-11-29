@@ -13,6 +13,7 @@ import edu.hm.sisy.ssma.api.communication.request.INodeRegistryService;
 import edu.hm.sisy.ssma.api.object.resource.BasicNode;
 import edu.hm.sisy.ssma.internal.bean.AbstractBean;
 import edu.hm.sisy.ssma.internal.bean.database.INodeDAOLocal;
+import edu.hm.sisy.ssma.internal.interceptor.AuthenticationInterceptor;
 import edu.hm.sisy.ssma.internal.interceptor.LoggingInterceptor;
 import edu.hm.sisy.ssma.internal.object.entity.EntityNode;
 
@@ -22,7 +23,7 @@ import edu.hm.sisy.ssma.internal.object.entity.EntityNode;
  * @author Stefan Wörner
  */
 @Stateless
-@Interceptors( LoggingInterceptor.class )
+@Interceptors( { LoggingInterceptor.class, AuthenticationInterceptor.class } )
 public class NodeRegistryService extends AbstractBean implements INodeRegistryService
 {
 
@@ -41,9 +42,6 @@ public class NodeRegistryService extends AbstractBean implements INodeRegistrySe
 	@Override
 	public List<BasicNode> findAll( String ssmsToken, HttpServletResponse response )
 	{
-		// Vorab Benutzerauthentifizierung prüfen
-		m_authenticationService.login( null, ssmsToken, response );
-
 		// Alle Nodes aus der Datenbank auslesen
 		List<EntityNode> eNodeList = m_nodeDAOBean.readAll();
 		List<BasicNode> nodeList = new ArrayList<BasicNode>();

@@ -10,6 +10,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import edu.hm.sisy.ssma.api.object.ApiConstants;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
+import edu.hm.sisy.ssma.internal.object.exception.UnsafeCredentialException;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -19,6 +20,9 @@ import edu.hm.sisy.ssma.internal.util.CodecUtility;
  */
 public class BasicAuthenticationModule
 {
+
+	private static final String STRONG_PASSWORD_PATTERN = ""
+			+ "(?=^.{10,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&amp;*()_+}{&quot;:;'?/&gt;.&lt;,])(?!.*\\s).*$";
 
 	private static final int TOTP_RESET_TOKEN_SIZE = 10;
 
@@ -93,7 +97,7 @@ public class BasicAuthenticationModule
 	 * @throws UnsupportedEncodingException
 	 *             Encoding wird nicht unterstützt
 	 */
-	protected static byte[] genSaltedHash( int iterations, String password, byte[] salt ) throws NoSuchAlgorithmException,
+	private static byte[] genSaltedHash( int iterations, String password, byte[] salt ) throws NoSuchAlgorithmException,
 			UnsupportedEncodingException
 	{
 		// Digest initialisieren (SHA-512)
@@ -164,6 +168,26 @@ public class BasicAuthenticationModule
 	}
 
 	/**
+	 * Generiert einen zufälligen Salt für die Erzeugung von salted Passwort-Hashs.
+	 * 
+	 * @return Salt
+	 * @throws NoSuchAlgorithmException
+	 *             Algorithmus existiert nicht
+	 */
+	protected static byte[] genSalt() throws NoSuchAlgorithmException
+	{
+		// Secure Random Instanz erzeugen um Zufallswerte zu erzeugen
+		SecureRandom random = SecureRandom.getInstance( RANDOM_GENERATION_ALGORITHM );
+		// Buffer für Salt initialisieren mit einer Länge von 64 bits
+		byte[] salt = new byte[8];
+		// Buffer mit Zufallswerten befüllen
+		random.nextBytes( salt );
+
+		// Salt zurückgeben
+		return salt;
+	}
+
+	/**
 	 * Gibt die URL zur Generierung und Anzeige des QR-Codes zurück. Der Benutzer fotografiert diese mit der Google
 	 * Authenticator App auf dem Smartphone ab, um den Secret Key abzuspeichern.
 	 * 
@@ -176,5 +200,19 @@ public class BasicAuthenticationModule
 	protected static String getQRCodeURL( String username, String totpSecret )
 	{
 		return String.format( TWO_FACTOR_QRCODE_BASE_URL, TWO_FACTOR_APPLICATION_NAME, username, totpSecret );
+	}
+
+	/**
+	 * Prüft die Komplexität des Passworts und wirft bei zu einfachen Passwörtern eine Exception.
+	 * 
+	 * @param credential
+	 *            Passwort
+	 */
+	protected static void validateCredentialComplexity( String credential )
+	{
+		if (!credential.matches( STRONG_PASSWORD_PATTERN ))
+		{
+			throw new UnsafeCredentialException();
+		}
 	}
 }
