@@ -53,9 +53,6 @@ public class UserRegistrationModule extends BasicAuthenticationModule
 			byte[] totpSecretBytes = genTotpSecret();
 			String totpSecretBase32 = CodecUtility.byteToBase32( totpSecretBytes );
 
-			// 2-Faktor Reset-Token für Nutzer erzeugen
-			String totpResetTokenBase32 = genTotpResetToken();
-
 			// Salt für Nutzer erzeugen und Base64 codieren
 			byte[] saltBytes = genSalt();
 			String saltBase64 = CodecUtility.byteToBase64( saltBytes );
@@ -64,13 +61,25 @@ public class UserRegistrationModule extends BasicAuthenticationModule
 			byte[] digestBytes = genSaltedHash( user.getPassword(), saltBytes );
 			String digestBase64 = CodecUtility.byteToBase64( digestBytes );
 
+			// Salt für 2-Faktor Reset-Token erzeugen und Base64 codieren
+			byte[] totpResetTokenSaltBytes = genSalt();
+			String totpResetTokenSaltBase64 = CodecUtility.byteToBase64( totpResetTokenSaltBytes );
+
+			// 2-Faktor Reset-Token für Nutzer erzeugen
+			String totpResetTokenBase32 = genTotpResetToken();
+
+			// Salted 2-Faktor Reset-Token-Hash erzeugen und Base64 codieren
+			byte[] totpResetTokenDigestBytes = genSaltedHash( totpResetTokenBase32, totpResetTokenSaltBytes );
+			String totpResetTokenDigestBase64 = CodecUtility.byteToBase64( totpResetTokenDigestBytes );
+
 			// Benutzer Entität erzeugen
 			EntityUser eUser = new EntityUser();
 			eUser.setUsername( user.getUsername() );
 			eUser.setTotpSecret( totpSecretBase32 );
 			eUser.setDigest( digestBase64 );
 			eUser.setSalt( saltBase64 );
-			eUser.setTotpResetToken( totpResetTokenBase32 );
+			eUser.setTotpResetToken( totpResetTokenDigestBase64 );
+			eUser.setTotpResetTokenSalt( totpResetTokenSaltBase64 );
 
 			// Benutzer in der Datenbank speichern
 			EntityUser eUserPersisted = m_userDAOBean.create( eUser );
@@ -83,7 +92,7 @@ public class UserRegistrationModule extends BasicAuthenticationModule
 			// URL für QR-Code und TOTP Reset Token zurückgeben
 			List<String> result = new ArrayList<String>();
 			result.add( qrCodeUrl );
-			result.add( eUserPersisted.getTotpResetToken() );
+			result.add( totpResetTokenBase32 );
 			return result;
 		}
 		catch (RuntimeException rex)

@@ -55,12 +55,22 @@ public class UserReRegistrationModule extends BasicAuthenticationModule
 			byte[] totpSecretBytes = genTotpSecret();
 			String totpSecretBase32 = CodecUtility.byteToBase32( totpSecretBytes );
 
+			// Neuen Salt für 2-Faktor Reset-Token erzeugen und Base64 codieren
+			byte[] totpResetTokenSaltBytes = genSalt();
+			String totpResetTokenSaltBase64 = CodecUtility.byteToBase64( totpResetTokenSaltBytes );
+
 			// Neuen 2-Faktor Reset-Token für Nutzer erzeugen
 			String totpResetTokenBase32 = genTotpResetToken();
 
+			// Neuen Salted 2-Faktor Reset-Token-Hash erzeugen und Base64 codieren
+			byte[] totpResetTokenDigestBytes = genSaltedHash( totpResetTokenBase32, totpResetTokenSaltBytes );
+			String totpResetTokenDigestBase64 = CodecUtility.byteToBase64( totpResetTokenDigestBytes );
+
 			// Benutzer Entität mit neuer TOTP Konfig aktualisieren
 			eUser.setTotpSecret( totpSecretBase32 );
-			eUser.setTotpResetToken( totpResetTokenBase32 );
+			eUser.setTotpResetToken( totpResetTokenDigestBase64 );
+			eUser.setTotpResetTokenSalt( totpResetTokenSaltBase64 );
+
 			// Session invalidieren
 			SessionManager.remove( user.getUsername() );
 
@@ -73,7 +83,7 @@ public class UserReRegistrationModule extends BasicAuthenticationModule
 			// URL für QR-Code und TOTP Reset Token zurückgeben
 			List<String> result = new ArrayList<String>();
 			result.add( qrCodeUrl );
-			result.add( eUserUpdated.getTotpResetToken() );
+			result.add( totpResetTokenBase32 );
 			return result;
 		}
 		catch (RuntimeException rex)

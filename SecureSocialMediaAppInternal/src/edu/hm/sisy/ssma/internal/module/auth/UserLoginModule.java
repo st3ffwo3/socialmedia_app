@@ -225,9 +225,17 @@ public class UserLoginModule extends BasicAuthenticationModule
 				((ReRegistrationUser) user).setResetToken( "" );
 			}
 
+			// Base64 codierter 2-Faktor Reset-Token-Digest decodieren
+			byte[] totpResetTokenDigestBytesStored = CodecUtility.base64ToByte( eUser.getTotpResetToken() );
+			// Base64 codierter 2-Faktor Reset-Token-Salt decodieren
+			byte[] totpResetTokenSaltBytesStored = CodecUtility.base64ToByte( eUser.getTotpResetTokenSalt() );
+
+			// Neuen salted 2-Faktor Reset-Token-Hash anhand des übergebenen Token berechnen
+			byte[] totpResetTokenDigestBytes = genSaltedHash(
+					StringUtils.deleteWhitespace( ((ReRegistrationUser) user).getResetToken() ), totpResetTokenSaltBytesStored );
+
 			// TOTP Token auf Korrektheit prüfen
-			authSuccessful = authSuccessful
-					&& validateTotpResetToken( eUser.getTotpResetToken(), ((ReRegistrationUser) user).getResetToken() );
+			authSuccessful = authSuccessful && Arrays.equals( totpResetTokenDigestBytesStored, totpResetTokenDigestBytes );
 		}
 		else
 		{
@@ -281,20 +289,6 @@ public class UserLoginModule extends BasicAuthenticationModule
 
 		// Token ist ungültig
 		return false;
-	}
-
-	/**
-	 * Validiert den TOTP Reset Token des Nutzers.
-	 * 
-	 * @param totpResetTokenStored
-	 *            Gespeicherter TOTP Reset Token
-	 * @param totpToken
-	 *            TOTP Reset Token des Nutzers
-	 * @return Gültigkeits-Flag
-	 */
-	private boolean validateTotpResetToken( String totpResetTokenStored, String totpResetToken )
-	{
-		return StringUtils.equalsIgnoreCase( totpResetTokenStored, StringUtils.deleteWhitespace( totpResetToken ) );
 	}
 
 	/**

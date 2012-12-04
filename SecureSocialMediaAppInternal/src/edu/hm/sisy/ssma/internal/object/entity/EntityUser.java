@@ -47,6 +47,9 @@ public class EntityUser extends AbstractEntityObject
 	@Column( name = "reconn", length = 255, nullable = false )
 	private String m_totpResetToken;
 
+	@Column( name = "resalt", length = 255, nullable = false )
+	private String m_totpResetTokenSalt;
+
 	/**
 	 * Liefert das Attribut username.
 	 * 
@@ -153,6 +156,27 @@ public class EntityUser extends AbstractEntityObject
 	}
 
 	/**
+	 * Liefert das Attribut totpResetTokenSalt.
+	 * 
+	 * @return totpResetTokenSalt
+	 */
+	public String getTotpResetTokenSalt()
+	{
+		return m_totpResetTokenSalt;
+	}
+
+	/**
+	 * Setzt das Attribut totpResetTokenSalt.
+	 * 
+	 * @param totpResetTokenSalt
+	 *            zu setzender Wert für das Attribut totpResetTokenSalt
+	 */
+	public void setTotpResetTokenSalt( String totpResetTokenSalt )
+	{
+		m_totpResetTokenSalt = totpResetTokenSalt;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see edu.hm.basic.object.AbstractBasicObject#getExclusionList()
@@ -160,7 +184,7 @@ public class EntityUser extends AbstractEntityObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_totpResetToken" };
+		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_totpResetToken", "m_totpResetTokenSalt" };
 	}
 
 	/**

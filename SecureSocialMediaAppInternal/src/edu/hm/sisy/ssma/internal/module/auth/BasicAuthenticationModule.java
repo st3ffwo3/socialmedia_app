@@ -66,8 +66,8 @@ public class BasicAuthenticationModule
 	/**
 	 * Berechnet den salted Hash für das übergebene Passwort.
 	 * 
-	 * @param password
-	 *            Zu verschlüsselndes Passwort
+	 * @param credential
+	 *            Zu verschlüsselndes Credential
 	 * @param salt
 	 *            Zu verwendender Salt
 	 * @return Verschlüsseltes Passwort (SaltedHash)
@@ -76,10 +76,10 @@ public class BasicAuthenticationModule
 	 * @throws UnsupportedEncodingException
 	 *             Encoding wird nicht unterstützt
 	 */
-	protected static byte[] genSaltedHash( String password, byte[] salt ) throws NoSuchAlgorithmException,
+	protected static byte[] genSaltedHash( String credential, byte[] salt ) throws NoSuchAlgorithmException,
 			UnsupportedEncodingException
 	{
-		return genSaltedHash( NUM_SALTED_HASH_ITERATIONS, password, salt );
+		return genSaltedHash( NUM_SALTED_HASH_ITERATIONS, credential, salt );
 	}
 
 	/**
@@ -87,8 +87,8 @@ public class BasicAuthenticationModule
 	 * 
 	 * @param iterations
 	 *            Anzahl der anzuwendenden Iterationen
-	 * @param password
-	 *            Zu verschlüsselndes Passwort
+	 * @param credential
+	 *            Zu verschlüsselndes Credential
 	 * @param salt
 	 *            Zu verwendender Salt
 	 * @return Verschlüsseltes Passwort (SaltedHash)
@@ -97,7 +97,7 @@ public class BasicAuthenticationModule
 	 * @throws UnsupportedEncodingException
 	 *             Encoding wird nicht unterstützt
 	 */
-	private static byte[] genSaltedHash( int iterations, String password, byte[] salt ) throws NoSuchAlgorithmException,
+	private static byte[] genSaltedHash( int iterations, String credential, byte[] salt ) throws NoSuchAlgorithmException,
 			UnsupportedEncodingException
 	{
 		// Digest initialisieren (SHA-512)
@@ -107,7 +107,7 @@ public class BasicAuthenticationModule
 		// Digest mit Salt aktualisieren
 		digest.update( salt );
 		// Salted Hash für Passwort berechnen (Iteration 1)
-		byte[] hash = digest.digest( password.getBytes( ApiConstants.DEFAULT_CHARSET ) );
+		byte[] hash = digest.digest( credential.getBytes( ApiConstants.DEFAULT_CHARSET ) );
 
 		for (int i = 0; i < iterations; i++)
 		{
