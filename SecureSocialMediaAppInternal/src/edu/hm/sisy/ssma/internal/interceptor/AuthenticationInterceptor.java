@@ -12,7 +12,9 @@ import javax.ws.rs.core.Context;
 
 import org.apache.commons.lang3.StringUtils;
 
-import edu.hm.sisy.ssma.api.communication.request.IAuthenticationService;
+import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
+import edu.hm.sisy.ssma.internal.module.auth.UserLoginModule;
+import edu.hm.sisy.ssma.internal.session.SsmsSession;
 
 /**
  * Interceptor Klasse prüft die Authentifizierung vor dem Methodenaufruf.
@@ -24,7 +26,7 @@ public class AuthenticationInterceptor
 {
 
 	@EJB
-	private IAuthenticationService m_authenticationService;
+	private IUserDAOLocal m_userDAOBean;
 
 	/**
 	 * Interceptor Methode führt Benutzerauthentifizierung durch und wirft bei Fehlschlag Exception.
@@ -46,7 +48,12 @@ public class AuthenticationInterceptor
 
 		// Authentifizierung durchführen
 		// => Bei fehlerhafter Authentifizierung wird Exception geworfen und weitere Verarbeitung abgebrochen
-		m_authenticationService.login( null, ssmsToken, response );
+		UserLoginModule loginModule = new UserLoginModule( m_userDAOBean );
+		// Benutzer oder Benutzer-Session authentifizieren
+		SsmsSession session = loginModule.authenticate( null, ssmsToken );
+
+		// Session-Token in den Header setzten
+		response.setHeader( "ssms-token", session.getSessionToken() );
 
 		// Aufgerufene Methode ausführen (Auth ok)
 		return ctx.proceed();

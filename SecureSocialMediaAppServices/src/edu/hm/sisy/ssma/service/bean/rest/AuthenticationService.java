@@ -12,7 +12,7 @@ import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.interceptor.LoggingInterceptor;
 import edu.hm.sisy.ssma.internal.module.auth.UserLoginModule;
 import edu.hm.sisy.ssma.internal.module.auth.UserLogoutModule;
-import edu.hm.sisy.ssma.internal.object.ressource.TokenUser;
+import edu.hm.sisy.ssma.internal.session.SsmsSession;
 
 /**
  * REST-Service für die Benutzerauthentifizierung. Verfügbare Aktionen: POST
@@ -38,22 +38,11 @@ public class AuthenticationService extends AbstractBean implements IAuthenticati
 	{
 		// Loginmodul initialisieren
 		UserLoginModule loginModule = new UserLoginModule( m_userDAOBean );
+		// Benutzer oder Benutzer-Session authentifizieren
+		SsmsSession session = loginModule.authenticate( user, ssmsToken );
 
-		if (user != null)
-		{
-			// Benutzer authentifizieren
-			ssmsToken = loginModule.authenticate( user );
-		}
-		else
-		{
-			// SSMS Token decodieren und TokenUser erstellen
-			TokenUser tUser = new TokenUser( ssmsToken );
-			// Benutzer authentifizieren
-			ssmsToken = loginModule.authenticate( tUser );
-		}
-
-		// SSMS-Token in den Header setzten
-		response.setHeader( "ssms-token", ssmsToken );
+		// Session-Token in den Header setzten
+		response.setHeader( "ssms-token", session.getSessionToken() );
 	}
 
 	/**
@@ -64,12 +53,9 @@ public class AuthenticationService extends AbstractBean implements IAuthenticati
 	@Override
 	public void logout( String ssmsToken )
 	{
-		// SSMS Token decodieren und TokenUser erstellen
-		TokenUser tUser = new TokenUser( ssmsToken );
-
 		// Logoutmodul initialisieren
 		UserLogoutModule logoutModule = new UserLogoutModule( m_userDAOBean );
 		// Benutzer abmelden und Session invalidieren
-		logoutModule.invalidate( tUser );
+		logoutModule.invalidate( ssmsToken );
 	}
 }

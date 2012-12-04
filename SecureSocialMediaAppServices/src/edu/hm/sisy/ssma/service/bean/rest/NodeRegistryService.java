@@ -8,7 +8,6 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.hm.sisy.ssma.api.communication.request.IAuthenticationService;
 import edu.hm.sisy.ssma.api.communication.request.INodeRegistryService;
 import edu.hm.sisy.ssma.api.object.resource.BasicNode;
 import edu.hm.sisy.ssma.internal.bean.AbstractBean;
@@ -29,9 +28,6 @@ public class NodeRegistryService extends AbstractBean implements INodeRegistrySe
 
 	@EJB
 	private INodeDAOLocal m_nodeDAOBean;
-
-	@EJB
-	private IAuthenticationService m_authenticationService;
 
 	/**
 	 * {@inheritDoc}

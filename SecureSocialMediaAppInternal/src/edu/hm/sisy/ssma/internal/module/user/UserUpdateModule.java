@@ -8,6 +8,9 @@ import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.module.auth.BasicAuthenticationModule;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
 import edu.hm.sisy.ssma.internal.object.exception.GenericUserUpdateException;
+import edu.hm.sisy.ssma.internal.object.exception.IllegalUserUpdateException;
+import edu.hm.sisy.ssma.internal.session.SessionManager;
+import edu.hm.sisy.ssma.internal.session.SsmsSession;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -34,9 +37,18 @@ public class UserUpdateModule extends BasicAuthenticationModule
 	 * 
 	 * @param user
 	 *            Benutzer
+	 * @param sessionToken
+	 *            Session-Token
 	 */
-	public void changePassword( BasicAuthUser user )
+	public void changePassword( BasicAuthUser user, String sessionToken )
 	{
+		SsmsSession session = SessionManager.retrieve( sessionToken );
+
+		if (!StringUtils.equalsIgnoreCase( session.getUsername(), user.getUsername() ))
+		{
+			throw new IllegalUserUpdateException();
+		}
+
 		try
 		{
 			// Benutzer in der Datenbank suchen

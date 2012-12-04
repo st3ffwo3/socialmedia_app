@@ -1,13 +1,9 @@
 package edu.hm.sisy.ssma.internal.object.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -50,13 +46,6 @@ public class EntityUser extends AbstractEntityObject
 
 	@Column( name = "reconn", length = 255, nullable = false )
 	private String m_totpResetToken;
-
-	@Column( name = "token", length = 255, nullable = true )
-	private String m_sessionToken;
-
-	@Temporal( TemporalType.TIMESTAMP )
-	@Column( name = "stamp", nullable = true )
-	private Date m_sessionTokenLastUpdated;
 
 	/**
 	 * Liefert das Attribut username.
@@ -164,48 +153,6 @@ public class EntityUser extends AbstractEntityObject
 	}
 
 	/**
-	 * Liefert das Attribut sessionToken.
-	 * 
-	 * @return sessionToken
-	 */
-	public String getSessionToken()
-	{
-		return m_sessionToken;
-	}
-
-	/**
-	 * Setzt das Attribut sessionToken.
-	 * 
-	 * @param sessionToken
-	 *            zu setzender Wert für das Attribut sessionToken
-	 */
-	public void setSessionToken( String sessionToken )
-	{
-		m_sessionToken = sessionToken;
-	}
-
-	/**
-	 * Liefert das Attribut sessionTokenLastUpdated.
-	 * 
-	 * @return sessionTokenLastUpdated
-	 */
-	public Date getSessionTokenLastUpdated()
-	{
-		return m_sessionTokenLastUpdated;
-	}
-
-	/**
-	 * Setzt das Attribut sessionTokenLastUpdated.
-	 * 
-	 * @param sessionTokenLastUpdated
-	 *            zu setzender Wert für das Attribut sessionTokenLastUpdated
-	 */
-	public void setSessionTokenLastUpdated( Date sessionTokenLastUpdated )
-	{
-		m_sessionTokenLastUpdated = sessionTokenLastUpdated;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see edu.hm.basic.object.AbstractBasicObject#getExclusionList()
@@ -213,8 +160,7 @@ public class EntityUser extends AbstractEntityObject
 	@Override
 	protected String[] getExclusionList()
 	{
-		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_totpResetToken", "m_sessionToken",
-				"m_sessionTokenLastUpdated" };
+		return new String[] { "m_digest", "m_salt", "m_totpSecret", "m_totpResetToken" };
 	}
 
 	/**

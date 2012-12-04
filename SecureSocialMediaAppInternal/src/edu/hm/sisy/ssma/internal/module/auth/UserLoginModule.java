@@ -1,10 +1,9 @@
 package edu.hm.sisy.ssma.internal.module.auth;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Date;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -13,14 +12,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.sisy.ssma.api.object.ApiConstants;
 import edu.hm.sisy.ssma.api.object.resource.BasicAuthUser;
-import edu.hm.sisy.ssma.api.object.resource.BasicUser;
 import edu.hm.sisy.ssma.api.object.resource.LoginUser;
 import edu.hm.sisy.ssma.api.object.resource.ReRegistrationUser;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
 import edu.hm.sisy.ssma.internal.object.exception.GenericUserAuthenticationException;
 import edu.hm.sisy.ssma.internal.object.exception.UserAuthenticationFailedException;
-import edu.hm.sisy.ssma.internal.object.ressource.TokenUser;
+import edu.hm.sisy.ssma.internal.session.SessionManager;
+import edu.hm.sisy.ssma.internal.session.SsmsSession;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -31,11 +30,7 @@ import edu.hm.sisy.ssma.internal.util.CodecUtility;
 public class UserLoginModule extends BasicAuthenticationModule
 {
 
-	private static final int SESSION_TOKEN_SIZE = 20;
-
 	private static int TOTP_WINDOW_SIZE = 1;
-
-	private static final long SESSION_TIME_FRAME = 10 * 60 * 1000; // 10 Minuten in Millisekunden
 
 	/**
 	 * Standardkonstruktor.
@@ -50,13 +45,15 @@ public class UserLoginModule extends BasicAuthenticationModule
 
 	/**
 	 * Authentifiziert einen Benutzer anhand seines Benutzernamens, Passworts und dem TOTP-Token bzw. anhand seines
-	 * Benutzernamens und dem Session-Token.
+	 * Session-Token.
 	 * 
 	 * @param user
 	 *            Zu authentifizierender Benutzer
-	 * @return SSMS-Token
+	 * @param sessionToken
+	 *            Session-Token
+	 * @return Session-Token
 	 */
-	public String authenticate( BasicUser user )
+	public SsmsSession authenticate( BasicAuthUser user, String sessionToken )
 	{
 		try
 		{
@@ -64,38 +61,33 @@ public class UserLoginModule extends BasicAuthenticationModule
 			{
 				if (user instanceof ReRegistrationUser)
 				{
-					// Es wird kein SSMS Session Token benötigt
+					// Es muss keine Session erzeugt werden
 					return null;
 				}
 
-				// Benutzer in der Datenbank suchen
-				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
-				// Authentifizierung mit Benutzernamen/Passwort/TOTP-Token war erfolgreich
-				// => Session Token generiern
-				eUser.setSessionToken( genSessionToken() );
-				eUser.setSessionTokenLastUpdated( new Date() );
-				// Session Token persistieren
-				eUser = m_userDAOBean.update( eUser );
-
-				// SSMS Token zurückgeben
-				return new TokenUser( eUser.getUsername(), eUser.getSessionToken() ).getSsmsToken();
+				// Session für Benutzer erzeugen und zurückgeben
+				return SessionManager.create( user.getUsername() );
 			}
-			else if (authenticateSession( user ))
+			else if (authenticateSession( sessionToken ))
 			{
-				// Benutzer in der Datenbank suchen
-				EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+				// Session laden
+				SsmsSession session = SessionManager.retrieve( sessionToken );
+
 				// Authentifizierung mit Benutzernamen/SessionToken war erfolgreich
 				// => LastUpdated aktualisieren
-				eUser.setSessionTokenLastUpdated( new Date() );
-				// Session Token persistieren
-				eUser = m_userDAOBean.update( eUser );
+				SessionManager.update( session );
 
-				// SSMS Token zurückgeben
-				return ((TokenUser) user).getSsmsToken();
+				// Session zurückgeben
+				return session;
 			}
 
 			// Session falls vorhanden invalidieren
-			invalidateSession( user );
+			SessionManager.remove( SessionManager.retrieve( sessionToken ) );
+			if (user != null)
+			{
+				SessionManager.remove( user.getUsername() );
+			}
+
 			// Exception werfen, da Authentifizierung fehlgeschlagen ist
 			throw new UserAuthenticationFailedException();
 		}
@@ -110,53 +102,43 @@ public class UserLoginModule extends BasicAuthenticationModule
 	}
 
 	/**
-	 * Authentifiziert einen Benutzer anhand seines Benutzernamens und dem Session-Token.
+	 * Authentifiziert einen Benutzer anhand seines Session-Token.
 	 * 
-	 * @param tUser
-	 *            Zu authentifizierender Benutzer
+	 * @param sessionToken
+	 *            Session-Token
 	 * @return Authentifizierungs-Flag
+	 * @throws NoSuchAlgorithmException
+	 *             Generierungs-Algorithmus nicht vorhanden
 	 */
-	private boolean authenticateSession( BasicUser user )
+	private boolean authenticateSession( String sessionToken ) throws NoSuchAlgorithmException
 	{
-		TokenUser tUser = null;
-
-		if (user instanceof TokenUser)
-		{
-			tUser = (TokenUser) user;
-		}
-
-		boolean userExist = true;
+		boolean sessionExist = true;
 
 		// Validierung der Eingabeparameter
-		if (tUser == null || StringUtils.isBlank( tUser.getUsername() ) || StringUtils.isBlank( tUser.getSessionToken() ))
+		if (StringUtils.isBlank( sessionToken ))
 		{
 			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
 			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
-			userExist = false;
-
-			tUser = new TokenUser( "", "" );
+			sessionExist = false;
+			sessionToken = "000000000000000000000";
 		}
 
-		// Benutzer in der Datenbank suchen
-		EntityUser eUser = m_userDAOBean.read( tUser.getUsername() );
+		// Session suchen
+		SsmsSession session = SessionManager.retrieve( sessionToken );
 
-		if (eUser == null || StringUtils.isBlank( eUser.getSessionToken() ) || eUser.getSessionTokenLastUpdated() == null)
+		if (session == null || StringUtils.isBlank( session.getSessionToken() ))
 		{
 			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
 			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
-			userExist = false;
+			sessionExist = false;
 
-			eUser = new EntityUser();
-			eUser.setSessionToken( "000000000000000000000000000=" );
-			eUser.setSessionTokenLastUpdated( new Date( 0 ) );
+			session = new SsmsSession( "00000000000000" );
 		}
 
 		// Auth-Flag-Indikator mit userExist Flag initialisieren
-		boolean authSuccessful = userExist;
+		boolean authSuccessful = sessionExist;
 		// Session-Token auf Gleichheit prüfen
-		authSuccessful = authSuccessful && StringUtils.equals( tUser.getSessionToken(), eUser.getSessionToken() );
-		// Ablaufdatum des Session-Token prüfen
-		authSuccessful = authSuccessful && checkSessionValidity( eUser.getSessionTokenLastUpdated().getTime() );
+		authSuccessful = authSuccessful && StringUtils.equals( sessionToken, session.getSessionToken() );
 
 		// Auth-Flag-Indikator zurückgeben
 		return authSuccessful;
@@ -169,111 +151,91 @@ public class UserLoginModule extends BasicAuthenticationModule
 	 * @param user
 	 *            Zu authentifizierender Benutzer
 	 * @return Authentifizierungs-Flag
+	 * @throws UnsupportedEncodingException
+	 *             Ungültiges Encoding gewählt
+	 * @throws NoSuchAlgorithmException
+	 *             Generierungs-Algorithmus nicht vorhanden
 	 */
-	private boolean authenticateUser( BasicUser user )
+	private boolean authenticateUser( BasicAuthUser user ) throws NoSuchAlgorithmException, UnsupportedEncodingException
 	{
-		BasicAuthUser aUser = null;
-		if (user instanceof BasicAuthUser)
+		boolean userExist = true;
+
+		// Validierung der Eingabeparameter
+		if (user == null || StringUtils.isBlank( user.getUsername() ) || StringUtils.isBlank( user.getPassword() ))
 		{
-			aUser = (BasicAuthUser) user;
+			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
+			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
+			userExist = false;
+
+			user = new BasicAuthUser();
+			user.setUsername( "" );
+			user.setPassword( "" );
+		}
+		else
+		{
+			// Base64 codiertes Passwort decodieren
+			byte[] passwordBytes = CodecUtility.base64ToByte( user.getPassword() );
+			user.setPassword( StringUtils.toString( passwordBytes, ApiConstants.DEFAULT_CHARSET ) );
 		}
 
-		try
+		// Benutzer in der Datenbank suchen
+		EntityUser eUser = m_userDAOBean.read( user.getUsername() );
+
+		if (eUser == null || StringUtils.isBlank( eUser.getDigest() ) || StringUtils.isBlank( eUser.getSalt() )
+				|| StringUtils.isBlank( eUser.getTotpSecret() ))
 		{
-			boolean userExist = true;
+			// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
+			// benötigten Zeit bei korrekten Authentifizierungsparametern sein
+			userExist = false;
 
-			// Validierung der Eingabeparameter
-			if (aUser == null || StringUtils.isBlank( aUser.getUsername() ) || StringUtils.isBlank( aUser.getPassword() ))
-			{
-				// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
-				// benötigten Zeit bei korrekten Authentifizierungsparametern sein
-				userExist = false;
-
-				aUser = new BasicAuthUser();
-				aUser.setUsername( "" );
-				aUser.setPassword( "" );
-			}
-			else
-			{
-				// Base64 codiertes Passwort decodieren
-				byte[] passwordBytes = CodecUtility.base64ToByte( aUser.getPassword() );
-				aUser.setPassword( StringUtils.toString( passwordBytes, ApiConstants.DEFAULT_CHARSET ) );
-			}
-
-			// Benutzer in der Datenbank suchen
-			EntityUser eUser = m_userDAOBean.read( aUser.getUsername() );
-
-			if (eUser == null || StringUtils.isBlank( eUser.getDigest() ) || StringUtils.isBlank( eUser.getSalt() )
-					|| StringUtils.isBlank( eUser.getTotpSecret() ))
-			{
-				// TIME RESISTANT ATTACK: Benötigte Zeit für Authentifizierung und Berechnungen muss identisch zur
-				// benötigten Zeit bei korrekten Authentifizierungsparametern sein
-				userExist = false;
-
-				eUser = new EntityUser();
-				eUser.setDigest( "000000000000000000000000000=" );
-				eUser.setSalt( "00000000000=" );
-				eUser.setTotpSecret( "0000000000000000" );
-				eUser.setTotpResetToken( "0000000000000000" );
-			}
-
-			// Base64 codiertes Digest decodieren
-			byte[] digestBytesStored = CodecUtility.base64ToByte( eUser.getDigest() );
-			// Base64 codierten Salt decodieren
-			byte[] saltBytesStored = CodecUtility.base64ToByte( eUser.getSalt() );
-
-			// Neuen salted Passwort-Hash anhand des übergebenen Passworts berechnen
-			byte[] digestBytes = genSaltedHash( aUser.getPassword(), saltBytesStored );
-
-			// Auth-Flag-Indikator mit userExist Flag initialisieren
-			boolean authSuccessful = userExist;
-			// Salted Passwort-Hashes auf Gleichheit prüfen
-			authSuccessful = authSuccessful && Arrays.equals( digestBytesStored, digestBytes );
-
-			if (user instanceof LoginUser)
-			{
-				if (((LoginUser) user).getTotpToken() == null)
-				{
-					((LoginUser) user).setTotpToken( new Long( 0 ) );
-				}
-
-				// TOTP Token auf Korrektheit prüfen
-				authSuccessful = authSuccessful && validateTotpToken( eUser.getTotpSecret(), ((LoginUser) user).getTotpToken() );
-			}
-			else if (user instanceof ReRegistrationUser)
-			{
-				if (((ReRegistrationUser) user).getResetToken() == null)
-				{
-					((ReRegistrationUser) user).setResetToken( "" );
-				}
-
-				// TOTP Token auf Korrektheit prüfen
-				authSuccessful = authSuccessful
-						&& validateTotpResetToken( eUser.getTotpResetToken(), ((ReRegistrationUser) user).getResetToken() );
-			}
-			else
-			{
-				authSuccessful = false;
-			}
-
-			// Auth-Flag-Indikator zurückgeben
-			return authSuccessful;
+			eUser = new EntityUser();
+			eUser.setDigest( "000000000000000000000000000=" );
+			eUser.setSalt( "00000000000=" );
+			eUser.setTotpSecret( "0000000000000000" );
+			eUser.setTotpResetToken( "0000000000000000" );
 		}
-		catch (RuntimeException rex)
+
+		// Base64 codiertes Digest decodieren
+		byte[] digestBytesStored = CodecUtility.base64ToByte( eUser.getDigest() );
+		// Base64 codierten Salt decodieren
+		byte[] saltBytesStored = CodecUtility.base64ToByte( eUser.getSalt() );
+
+		// Neuen salted Passwort-Hash anhand des übergebenen Passworts berechnen
+		byte[] digestBytes = genSaltedHash( user.getPassword(), saltBytesStored );
+
+		// Auth-Flag-Indikator mit userExist Flag initialisieren
+		boolean authSuccessful = userExist;
+		// Salted Passwort-Hashes auf Gleichheit prüfen
+		authSuccessful = authSuccessful && Arrays.equals( digestBytesStored, digestBytes );
+
+		if (user instanceof LoginUser)
 		{
-			throw rex;
-		}
-		catch (Exception ex)
-		{
-			throw new GenericUserAuthenticationException();
-		}
-	}
+			if (((LoginUser) user).getTotpToken() == null)
+			{
+				((LoginUser) user).setTotpToken( new Long( 0 ) );
+			}
 
-	private boolean checkSessionValidity( long lastUpdated )
-	{
-		// Aktuelle Zeit abzüglich des Zeitfensers von 10 Minuten muss kleiner (älter) sein als das letzte
-		// Aktualisierungsdatum der Session
-		return (new Date().getTime() - SESSION_TIME_FRAME) < lastUpdated;
+			// TOTP Token auf Korrektheit prüfen
+			authSuccessful = authSuccessful && validateTotpToken( eUser.getTotpSecret(), ((LoginUser) user).getTotpToken() );
+		}
+		else if (user instanceof ReRegistrationUser)
+		{
+			if (((ReRegistrationUser) user).getResetToken() == null)
+			{
+				((ReRegistrationUser) user).setResetToken( "" );
+			}
+
+			// TOTP Token auf Korrektheit prüfen
+			authSuccessful = authSuccessful
+					&& validateTotpResetToken( eUser.getTotpResetToken(), ((ReRegistrationUser) user).getResetToken() );
+		}
+		else
+		{
+			authSuccessful = false;
+		}
+
+		// Auth-Flag-Indikator zurückgeben
+		return authSuccessful;
 	}
 
 	/**
@@ -336,29 +298,6 @@ public class UserLoginModule extends BasicAuthenticationModule
 	}
 
 	/**
-	 * Generiert einen zufälligen Token für die SSMA Session und gibt diesen Base64 codiert zurück.
-	 * 
-	 * @return Base64 codierter SSMA Token
-	 * @throws NoSuchAlgorithmException
-	 *             Algorithmus existiert nicht
-	 */
-	private static String genSessionToken() throws NoSuchAlgorithmException
-	{
-		// Secure Random Instanz erzeugen um Zufallswerte zu erzeugen
-		SecureRandom random = SecureRandom.getInstance( RANDOM_GENERATION_ALGORITHM );
-		// Buffer für Token initialisieren mit einer Länge von 160 bits
-		byte[] sessionTokenBytes = new byte[SESSION_TOKEN_SIZE];
-		// Buffer mit Zufallswerten befüllen
-		random.nextBytes( sessionTokenBytes );
-
-		// Token Base64 encodieren
-		String sessionToken = CodecUtility.byteToBase64( sessionTokenBytes );
-
-		// Token zurückgeben
-		return sessionToken;
-	}
-
-	/**
 	 * @see http://thegreyblog.blogspot.com/2011/12/google-authenticator-using-it-in-your.html
 	 * @see http://code.google.com/p/google-authenticator
 	 * @see https://tools.ietf.org/html/rfc6238
@@ -393,21 +332,5 @@ public class UserLoginModule extends BasicAuthenticationModule
 		truncatedHash %= 1000000;
 
 		return (int) truncatedHash;
-	}
-
-	private void invalidateSession( BasicUser user )
-	{
-		// Benutzer in der Datenbank suchen
-		EntityUser eUser = m_userDAOBean.read( user.getUsername() );
-
-		if (eUser != null)
-		{
-			// Authentifizierung ist fehlgeschlagen
-			// => Session Token invalidieren
-			eUser.setSessionToken( null );
-			eUser.setSessionTokenLastUpdated( null );
-			// Invalidiertes Session Token persistieren
-			eUser = m_userDAOBean.update( eUser );
-		}
 	}
 }

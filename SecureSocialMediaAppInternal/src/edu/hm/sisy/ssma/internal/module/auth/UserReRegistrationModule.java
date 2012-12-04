@@ -7,6 +7,7 @@ import edu.hm.sisy.ssma.api.object.resource.ReRegistrationUser;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.object.entity.EntityUser;
 import edu.hm.sisy.ssma.internal.object.exception.GenericUserRegistrationException;
+import edu.hm.sisy.ssma.internal.session.SessionManager;
 import edu.hm.sisy.ssma.internal.util.CodecUtility;
 
 /**
@@ -43,7 +44,7 @@ public class UserReRegistrationModule extends BasicAuthenticationModule
 	{
 		// Benutzer authentifizieren
 		// => Bei fehlerhafter Authentifizierung wird Exception geworfen und weitere Verarbeitung abgebrochen
-		m_loginModule.authenticate( user );
+		m_loginModule.authenticate( user, null );
 
 		try
 		{
@@ -61,8 +62,7 @@ public class UserReRegistrationModule extends BasicAuthenticationModule
 			eUser.setTotpSecret( totpSecretBase32 );
 			eUser.setTotpResetToken( totpResetTokenBase32 );
 			// Session invalidieren
-			eUser.setSessionToken( null );
-			eUser.setSessionTokenLastUpdated( null );
+			SessionManager.remove( user.getUsername() );
 
 			// Benutzer in der Datenbank speichern
 			EntityUser eUserUpdated = m_userDAOBean.update( eUser );

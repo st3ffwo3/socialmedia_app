@@ -38,6 +38,16 @@ public class BasicAuthenticationModule
 			+ "chart?chs=200x200&cht=qr&chld=M|0&chl=otpauth://totp/%s:%s?secret=%s";
 
 	/**
+	 * Anzahl an Iterationen für salted Hash Berechnung.
+	 */
+	protected static final int NUM_SALTED_HASH_ITERATIONS = 5;
+
+	/**
+	 * Secure Random Generierungsalgorithmus.
+	 */
+	protected static final String RANDOM_GENERATION_ALGORITHM = "SHA1PRNG";
+
+	/**
 	 * Referenz auf User DAO Bean.
 	 */
 	protected IUserDAOLocal m_userDAOBean;
@@ -52,16 +62,6 @@ public class BasicAuthenticationModule
 	{
 		m_userDAOBean = userDAOBean;
 	}
-
-	/**
-	 * Anzahl an Iterationen für salted Hash Berechnung.
-	 */
-	protected static final int NUM_SALTED_HASH_ITERATIONS = 5;
-
-	/**
-	 * Secure Random Generierungsalgorithmus.
-	 */
-	protected static final String RANDOM_GENERATION_ALGORITHM = "SHA1PRNG";
 
 	/**
 	 * Berechnet den salted Hash für das übergebene Passwort.
