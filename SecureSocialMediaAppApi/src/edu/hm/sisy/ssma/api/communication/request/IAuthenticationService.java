@@ -4,6 +4,7 @@ import javax.ejb.Local;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -16,7 +17,7 @@ import org.jboss.resteasy.spi.validation.ValidateRequest;
 import edu.hm.sisy.ssma.api.object.resource.LoginUser;
 
 /**
- * REST-Service für die Benutzerauthentifizierung. Verfügbare Aktionen: POST
+ * REST-Service für die Benutzerauthentifizierung. Verfügbare Aktionen: POST, GET
  * 
  * @author Stefan Wörner
  */
@@ -29,18 +30,28 @@ public interface IAuthenticationService
 {
 
 	/**
-	 * Authentifiziert und melden einen Benutzer im System an.
+	 * Authentifiziert und meldet einen Benutzer im System an.
 	 * 
 	 * @param user
 	 *            Login Benutzer
-	 * @param ssmsToken
-	 *            Base64 codiertes SSMS-Token (Bestehend aus Nutzername und SessionToken)
 	 * @param response
 	 *            HttpServletResponse (wird verwendet um in den Response Header zu schreiben)
 	 */
 	@POST
 	@Path( "login" )
-	void login( @Valid LoginUser user, @HeaderParam( "ssms-token" ) String ssmsToken, @Context HttpServletResponse response );
+	void login( @Valid LoginUser user, @Context HttpServletResponse response );
+
+	/**
+	 * Authentifiziert und meldet einen Benutzer im System an.
+	 * 
+	 * @param ssmsToken
+	 *            Base64 codiertes SSMS-Token (Bestehend aus Nutzername und SessionToken)
+	 * @param response
+	 *            HttpServletResponse (wird verwendet um in den Response Header zu schreiben)
+	 */
+	@GET
+	@Path( "auth" )
+	void authenticate( @HeaderParam( "ssms-token" ) String ssmsToken, @Context HttpServletResponse response );
 
 	/**
 	 * Meldet einen Benutzer vom System ab.
