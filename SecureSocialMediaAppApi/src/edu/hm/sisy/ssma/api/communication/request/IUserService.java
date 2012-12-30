@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.spi.validation.ValidateRequest;
 
-import edu.hm.sisy.ssma.api.object.resource.BasicAuthUser;
+import edu.hm.sisy.ssma.api.object.resource.PwdChangeUser;
 
 /**
  * REST-Service für die Benutzer. Verfügbare Aktionen: POST
@@ -40,6 +40,6 @@ public interface IUserService
 	 */
 	@POST
 	@Path( "update-pwd" )
-	void changePassword( @Valid BasicAuthUser user, @HeaderParam( "ssms-token" ) String ssmsToken,
+	void changePassword( @Valid PwdChangeUser user, @HeaderParam( "ssms-token" ) String ssmsToken,
 			@Context HttpServletResponse response );
 }

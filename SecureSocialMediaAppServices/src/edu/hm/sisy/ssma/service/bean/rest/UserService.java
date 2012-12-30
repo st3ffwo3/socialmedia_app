@@ -6,7 +6,7 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.hm.sisy.ssma.api.communication.request.IUserService;
-import edu.hm.sisy.ssma.api.object.resource.BasicAuthUser;
+import edu.hm.sisy.ssma.api.object.resource.PwdChangeUser;
 import edu.hm.sisy.ssma.internal.bean.AbstractBean;
 import edu.hm.sisy.ssma.internal.bean.database.IUserDAOLocal;
 import edu.hm.sisy.ssma.internal.interceptor.AuthenticationInterceptor;
@@ -29,11 +29,11 @@ public class UserService extends AbstractBean implements IUserService
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see edu.hm.sisy.ssma.api.communication.request.IUserService#changePassword(edu.hm.sisy.ssma.api.object.resource.BasicAuthUser,
+	 * @see edu.hm.sisy.ssma.api.communication.request.IUserService#changePassword(edu.hm.sisy.ssma.api.object.resource.PwdChangeUser,
 	 *      java.lang.String, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public void changePassword( BasicAuthUser user, String ssmsToken, HttpServletResponse response )
+	public void changePassword( PwdChangeUser user, String ssmsToken, HttpServletResponse response )
 	{
 		// Benutzer-Aktualisierungsmodul initialisieren
 		UserUpdateModule userUpdateModule = new UserUpdateModule( m_userDAOBean );

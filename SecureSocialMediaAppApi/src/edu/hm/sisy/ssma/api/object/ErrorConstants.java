@@ -89,6 +89,12 @@ public final class ErrorConstants
 			+ "Sie können nur Ihre eigenen Benutzerdaten ändern.";
 
 	/**
+	 * Fehlermeldung für ein ungültiges altes Passwort.
+	 */
+	public static final String ILLEGAL_OLD_PASSWORD_ERROR_MSG = "Aktualisierung der Benutzer-Credentials fehlgeschlagen: "
+			+ "Ihr eingegebenes, altes Passwort ist nicht korrekt.";
+
+	/**
 	 * Fehlermeldung für allgemeine Fehler bei der Benutzeraktualisierung.
 	 */
 	public static final String GENERIC_USER_UPDATE_ERROR_MSG = "Bei der Aktualisierung ihrer Benutzer-Credentials ist ein Fehler aufgetregen. "
