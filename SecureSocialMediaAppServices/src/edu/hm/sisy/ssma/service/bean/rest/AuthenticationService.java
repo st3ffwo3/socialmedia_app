@@ -4,8 +4,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.core.Context;
 
 import edu.hm.sisy.ssma.api.communication.request.IAuthenticationService;
 import edu.hm.sisy.ssma.api.object.resource.LoginUser;
@@ -33,7 +31,7 @@ public class AuthenticationService extends AbstractBean implements IAuthenticati
 	 * {@inheritDoc}
 	 * 
 	 * @see edu.hm.sisy.ssma.api.communication.request.IAuthenticationService#login(edu.hm.sisy.ssma.api.object.resource.LoginUser,
-	 *      java.lang.String, javax.servlet.http.HttpServletResponse)
+	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	public void login( LoginUser user, HttpServletResponse response )
@@ -54,7 +52,7 @@ public class AuthenticationService extends AbstractBean implements IAuthenticati
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public void authenticate( @HeaderParam( "ssms-token" ) String ssmsToken, @Context HttpServletResponse response )
+	public void authenticate( String ssmsToken, HttpServletResponse response )
 	{
 		// Loginmodul initialisieren
 		UserLoginModule loginModule = new UserLoginModule( m_userDAOBean );
